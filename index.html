@@ -161,7 +161,7 @@
 <p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/luajit_call_mmap.png" alt="luajit_call_mmap"></p>
 <p>宏隔开，三段，用“#error msg”编译，用的是LJ_ALLOC_MMAP_PROBE这段。把宏定义取消，重新编译，就ok了。</p>
 <p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/lj_alloc_macro.png" alt="lj_alloc_macro"></p>
-<p>(补充一下，仔细看上图，GC64可用多少内存？唉，现在的面试官总喜欢问这种茴字有几种写法的问题，投其所好，你们记吧，我再看10遍也只是记得够用，笔者炫耀一下在电信行业测试最大的core dump是46GB，漏着跑了一夜，太大了，mdb都没法加载，哈哈哈)</p>
+<p>(补充一下，仔细看上图，GC64可用多少内存？现在的面试官还是挺喜欢问这种问题的，唉，可怜我再看10遍也只是记得够用，笔者炫耀一下在电信行业测试最大的core dump是46GB，漏着跑了一夜，太大了，mdb都没法加载，之后再也没用过这么大内存的机器了，哈哈哈)</p>
 <p>到这里，就差不多了，我们新项目用着没问题。</p>
 <h1 id="3-其他"><a href="#3-其他" class="headerlink" title="3. 其他"></a>3. 其他</h1><h1 id="3-1-lua文件编译的变化"><a href="#3-1-lua文件编译的变化" class="headerlink" title="3.1. lua文件编译的变化"></a>3.1. lua文件编译的变化</h1><p>luajit 2.1中lua和luac两个命令合一，都叫luajit，把之前的lua和luac改成软链。<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/lua_link.png" alt="lua_link.png"></p>
 <p>Makefile（也是我弄的，设计挺轻巧的，改天开篇讲，<a href="https://github.com/noodle1983/framework-nd/blob/master/build/makefile.compile.rules" target="_blank" rel="noopener">7年前初始版</a>）相应修改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- $(PROJBASE)/lib/bin/luac -o $(DEST_OUTDIR)/&#123;&#125;.lc &#123;&#125;.lua</span><br><span class="line">+ LUA_PATH=$(PROJBASE)/lib/bin/?.lua $(PROJBASE)/lib/bin/luac -O3 -bg &#123;&#125;.lua $(DEST_OUTDIR)/&#123;&#125;.lc</span><br></pre></td></tr></table></figure></p>
