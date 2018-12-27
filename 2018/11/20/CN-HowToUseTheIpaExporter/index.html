@@ -6,20 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏） | Noodle&#39;s blog</title>
+  <title>一键导出Unity iOS文件 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1. 背景我们项目为ARPG手游（也没啥见不得人的，就叫暗黑血统手游，后期不少坑钱活动的实现出自我手，轻拍。。。）。我们的服务器底层设计源于某大厂，c/c++和luajit的实现，这次要说的是项目上线时（2014年11月左右）的一次luajit对象内存泄漏（废弃的数据没删，我们都叫泄漏）和相应的解决方案。 2. 问题表现内存增长，速率大概为200～300MB/天。 我们日志会周期性打印Tcmall">
-<meta name="keywords" content="private">
+  <meta name="description" content="1. 概述本文出自Unity一键导出iOS安装包工具的说明文档容。最最重要的是证书的权限设置，其他根据本文指引和Google，可以毫无障碍地实现此功能。当然，捷径也是有的： IpaExporter in Unity Asset Store. 如题所述，本文的目的是一键导出iOS安装包。只要提供了证书文件，不需要Apple账号和密码，就可以同时导出ad-hoc和ios store的安装包。工具里提供">
+<meta name="keywords" content="Unity iOS build">
 <meta property="og:type" content="article">
-<meta property="og:title" content="luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）">
-<meta property="og:url" content="http://yoursite.com/2018/12/26/LuajitTableMonitor/index.html">
+<meta property="og:title" content="一键导出Unity iOS文件">
+<meta property="og:url" content="http://yoursite.com/2018/11/20/CN-HowToUseTheIpaExporter/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
-<meta property="og:description" content="1. 背景我们项目为ARPG手游（也没啥见不得人的，就叫暗黑血统手游，后期不少坑钱活动的实现出自我手，轻拍。。。）。我们的服务器底层设计源于某大厂，c/c++和luajit的实现，这次要说的是项目上线时（2014年11月左右）的一次luajit对象内存泄漏（废弃的数据没删，我们都叫泄漏）和相应的解决方案。 2. 问题表现内存增长，速率大概为200～300MB/天。 我们日志会周期性打印Tcmall">
+<meta property="og:description" content="1. 概述本文出自Unity一键导出iOS安装包工具的说明文档容。最最重要的是证书的权限设置，其他根据本文指引和Google，可以毫无障碍地实现此功能。当然，捷径也是有的： IpaExporter in Unity Asset Store. 如题所述，本文的目的是一键导出iOS安装包。只要提供了证书文件，不需要Apple账号和密码，就可以同时导出ad-hoc和ios store的安装包。工具里提供">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-26T13:22:21.542Z">
+<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/IpaExporter/ppconfig.png">
+<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/IpaExporter/editor.png">
+<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/IpaExporter/workflow.png">
+<meta property="og:updated_time" content="2018-12-27T03:51:18.579Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）">
-<meta name="twitter:description" content="1. 背景我们项目为ARPG手游（也没啥见不得人的，就叫暗黑血统手游，后期不少坑钱活动的实现出自我手，轻拍。。。）。我们的服务器底层设计源于某大厂，c/c++和luajit的实现，这次要说的是项目上线时（2014年11月左右）的一次luajit对象内存泄漏（废弃的数据没删，我们都叫泄漏）和相应的解决方案。 2. 问题表现内存增长，速率大概为200～300MB/天。 我们日志会周期性打印Tcmall">
+<meta name="twitter:title" content="一键导出Unity iOS文件">
+<meta name="twitter:description" content="1. 概述本文出自Unity一键导出iOS安装包工具的说明文档容。最最重要的是证书的权限设置，其他根据本文指引和Google，可以毫无障碍地实现此功能。当然，捷径也是有的： IpaExporter in Unity Asset Store. 如题所述，本文的目的是一键导出iOS安装包。只要提供了证书文件，不需要Apple账号和密码，就可以同时导出ad-hoc和ios store的安装包。工具里提供">
+<meta name="twitter:image" content="https://github.com/noodle1983/private/raw/master/IpaExporter/ppconfig.png">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
   
@@ -133,55 +137,73 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-LuajitTableMonitor" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-CN-HowToUseTheIpaExporter" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）
+      一键导出Unity iOS文件
     </h1>
   
 
         
-        <a href="/2018/12/26/LuajitTableMonitor/" class="archive-article-date">
-  	<time datetime="2018-12-26T11:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-26</time>
+        <a href="/2018/11/20/CN-HowToUseTheIpaExporter/" class="archive-article-date">
+  	<time datetime="2018-11-20T11:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-20</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>我们项目为ARPG手游（也没啥见不得人的，就叫暗黑血统手游，后期不少坑钱活动的实现出自我手，轻拍。。。）。我们的服务器底层设计源于某大厂，c/c++和luajit的实现，这次要说的是项目上线时（2014年11月左右）的一次luajit对象内存泄漏（废弃的数据没删，我们都叫泄漏）和相应的解决方案。</p>
-<h1 id="2-问题表现"><a href="#2-问题表现" class="headerlink" title="2. 问题表现"></a>2. 问题表现</h1><p>内存增长，速率大概为200～300MB/天。</p>
-<p>我们日志会周期性打印Tcmalloc内存（Tcmalloc分享另见同事Wallen的博客<a href="https://wallenwang.com/tcmalloc.html" target="_blank" rel="noopener">TCMalloc解密</a>）和lua部分内存。获取方法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//tc malloc部分</span><br><span class="line">size_t tc_memory = 0;</span><br><span class="line">MallocExtension::instance()-&gt;GetNumericProperty( &quot;generic.current_allocated_bytes&quot;, &amp;tc_memory );</span><br><span class="line"></span><br><span class="line">//luajit部分</span><br><span class="line">int lua_memory = lua_gc( _L, LUA_GCCOUNT, 0 );</span><br></pre></td></tr></table></figure></p>
-<p>通过日志发现在线人数相似时，lua部分内存和总内存在同步增长，c/c++部分内存（即上两个部分差值，主要是网络库、对象体系对象和World部分的内存）基本稳定。日志显示lua的gc正常。</p>
-<h1 id="3-分析"><a href="#3-分析" class="headerlink" title="3. 分析"></a>3. 分析</h1><ul>
-<li>c/c++部分没有泄漏，player/monster等对象释放没有问题，c层对象析构基本由lua层触发，lua层对应的对象内存释放也是没有问题的。</li>
-<li>通过日志显示，场景/副本管理的释放也是没有问题的，在线导出各个场景/副本内的对象个数/类型，经过分析，也没发现什么问题，日志监控的数据也都正常。</li>
-<li>最后怀疑是一些非主要的lua对象，存在表里没清除。因为lua对象里，我们没有太复杂的表结构，因此这些泄漏的内存会扁平地存在少量的几个表里。因此，只要能知道各个表的记录数，结合在线人数推算其最大可能数，二者相比较，就能找出泄漏的表，在检查表的增删逻辑，就可以找到泄漏的逻辑。</li>
+        <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h1><p>本文出自Unity一键导出iOS安装包工具的说明文档容。最最重要的是证书的权限设置，其他根据本文指引和Google，可以毫无障碍地实现此功能。当然，捷径也是有的： <a href="https://www.assetstore.unity3d.com/#!/content/132115" target="_blank" rel="noopener"><br>IpaExporter in Unity Asset Store</a>.</p>
+<p>如题所述，本文的目的是一键导出iOS安装包。只要提供了证书文件，不需要Apple账号和密码，就可以同时导出ad-hoc和ios store的安装包。工具里提供了一个简单的证书解析器，所以打包的信息均从证书中提取，不需要额外配置，易于维护，省时省心。工具内包含所有脚本，可按需修改。</p>
+<h1 id="2-怎么做"><a href="#2-怎么做" class="headerlink" title="2. 怎么做"></a>2. 怎么做</h1><h1 id="2-1-准备工作"><a href="#2-1-准备工作" class="headerlink" title="2.1. 准备工作"></a>2.1. 准备工作</h1><ul>
+<li>有效的Apple证书</li>
+<li>证书的App ID不包含通配符. （如前述，导出Apple工程的APP ID用的是证书里的App ID，如果要包含通配符，你得把App ID hard code一下）</li>
 </ul>
-<h1 id="4-lua表记录数告警方案"><a href="#4-lua表记录数告警方案" class="headerlink" title="4. lua表记录数告警方案"></a>4. lua表记录数告警方案</h1><p>如前述，只要知道各个表的记录数，结合在线人数推算其最大可能数，二者相比较，就能找出泄漏的表。但是如果直接这么做，势必影响性能，即使热更gm指令用lua全遍历1次（因为table的值也可能是table，实际上要遍历一棵树），都是分钟级别的。分帧做？这坑好大，如果不行也只能这么干了。按泄漏的速度，内存可以撑到下一次维护，所以，不慌。</p>
-<p>然后看看c层luajit表的相关操作，看看有没有更有效率的获取方法（我们c层代码不热更，改c层代码需要等维护重启后才能生效，按泄漏速度，可以接受）。</p>
-<p>代码里主要关注的是lua table的增加和删除记录。然后看到lua table的resize（下面luajit相关代码都是luajit2.1分支代码，和1会长得有些不一样，我们已升luajit2.1，将就一下）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/* Resize a table to fit the new array/hash part sizes. */</span><br><span class="line">void lj_tab_resize(lua_State *L, GCtab *t, uint32_t asize, uint32_t hbits)</span><br><span class="line">&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>逻辑其实就是数组段或者哈希段每次超过2的n次幂，会重新分配内存。</p>
-<p>我们不需要精确的记录数，其实只要在他每次resize的时候打条日志就能知道这个table大概的记录数，比如上一条日志是1024-&gt;2048，那么记录数在1024～2048之间。日志的优化见工程化部分。</p>
-<p>怎么确定是哪个table？这里我们能取到的是table的地址，取不到table的名字，根据地址取名字也是一场噩梦。这里我们曲线救国，既然能拿到lua_State，可以把lua的堆栈打出来，根据文件名和行号可以定位到代码行号，一行代码没几个table，这样就能确定下来了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//打印lua层堆栈，编译lua加上调试信息</span><br><span class="line">int32_t c_bt( lua_State* _L )</span><br><span class="line">&#123;	</span><br><span class="line"> 	lua_Debug ldb;</span><br><span class="line">	LOG(&quot;[LUAWRAPPER](lua_stack) begin .......... &quot;);</span><br><span class="line">    for(int32_t i = 0; lua_getstack( _L, i, &amp;ldb)==1; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        lua_getinfo(_L, &quot;Slnu&quot;, &amp;ldb);</span><br><span class="line">        const char * name = ldb.name;</span><br><span class="line">        if (!name)</span><br><span class="line">            name = &quot;&quot;;</span><br><span class="line">        const char * filename = ldb.source;</span><br><span class="line"></span><br><span class="line">		LOG(&quot;[LUAWRAPPER](bt) #%d: %s:&apos;%s&apos;, &apos;%s&apos; line %d&quot;, i, ldb.what, name, filename, ldb.currentline );</span><br><span class="line">	&#125;</span><br><span class="line">	LOG(&quot;[LUAWRAPPER](lua_stack) end .......... &quot;);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>到此，表的记录数我们能拿到个粗略的值，也知道是哪张表了，每张表最大的数值也可以根据在线人数估计（大部分近似在线人数+暂时断线的+跨服的，Buff之类的可以乘以一个最大倍数），剩下的就交给时间和人工分析日志比较了。过滤掉正常的日志，就能得到包含了泄漏对象的表了，在分析增删逻辑就能找到废弃又没有清楚的数据了。</p>
-<h1 id="5-工程化"><a href="#5-工程化" class="headerlink" title="5. 工程化"></a>5. 工程化</h1><p>前面讲的只是方案，真正应用的时候，需要减少日志的条数，以减轻分析的工作量。减少日志通过下面两种方式：</p>
+<h1 id="2-2-导入证书并开放访问权限"><a href="#2-2-导入证书并开放访问权限" class="headerlink" title="2.2. 导入证书并开放访问权限"></a>2.2. 导入证书并开放访问权限</h1><p>每次更新证书（私钥），都得重做步骤2.2.2至2.2.3。如果App签名失败，你得重新检查/重做这些步骤。</p>
+<p>开放证书权限会导致任何应用都可以使用其进行签名，目前来看也不能拿他去干什么坏事情。</p>
+<h1 id="2-2-1-导入私钥和证书"><a href="#2-2-1-导入私钥和证书" class="headerlink" title="2.2.1 导入私钥和证书"></a>2.2.1 导入私钥和证书</h1><p>鼠标双击文件即可。</p>
+<p>私钥如果是p12文件会需要密码，找私钥提供者提供。如果私钥有更新，可能需要删除原导入的证书后，再导入新的证书。</p>
+<p>如果仅更新证书，直接替换原证书文件双击即可。</p>
+<p>更多的证书相关知识网上很多，请自行科普了。</p>
+<h1 id="2-2-2-开放证书权限（非常重要）"><a href="#2-2-2-开放证书权限（非常重要）" class="headerlink" title="2.2.2 开放证书权限（非常重要）"></a>2.2.2 开放证书权限（非常重要）</h1><p>因为在工具里，我们是用bash脚本进行签名的，所以不会弹出窗口请求证书权限，所以我们需要设置证书的权限为”allow all…”。所有步骤见下图（中文版请自行人工智能匹配）。</p>
+<p><img src="https://github.com/noodle1983/private/raw/master/IpaExporter/ppconfig.png" alt="image"></p>
+<p>对每一个证书，你需要检查/重做步骤6-10。</p>
+<h1 id="2-2-3-Copy证书进工程"><a href="#2-2-3-Copy证书进工程" class="headerlink" title="2.2.3 Copy证书进工程"></a>2.2.3 Copy证书进工程</h1><p>如前所诉，工具里包含了一个简单的证书解析工具，我们可以将证书Copy进工程，当配置文件用。</p>
+<p>Copy文件 <em>.mobileprovision 到工程相对目录 **</em>Assets/IpaExporter/IosProvisioningProfile/*** .</p>
+<p>如果你的工程像我的一样，有几个App Id，那么我建议把同一个App Id的证书文件放到一个这个APP Id命名的目录下。看起来路径像是这样子： <strong><em>Assets/IpaExporter/IosProvisioningProfile/[bundleid]/*.mobileprovision</em></strong>.</p>
+<p><strong>目录下仅需要保留最新的证书文件，删掉旧的文件。</strong>一旦新的证书在苹果页面上生成，旧的就没用了，所以也没必要保留他。如果新旧文件放在一起，工具没区分，会用错证书。</p>
+<h1 id="2-3-简要的一键打包页面"><a href="#2-3-简要的一键打包页面" class="headerlink" title="2.3. 简要的一键打包页面"></a>2.3. 简要的一键打包页面</h1><p>在工具里可以通过菜单路径打开一键打包页面： <em>IpaExproter -&gt; Build Ipa Window</em>。<br><img src="https://github.com/noodle1983/private/raw/master/IpaExporter/editor.png" alt="image"></p>
+<p>下面是每一项的说明：</p>
+<ol>
+<li>证书目录的全路径。</li>
+<li>版本号。</li>
+<li>导出Apk的bundle id。</li>
+<li>如果第三项导出Apk的bundle id对应的证书找不到，会有一个错误提示。然后下面会列出当前证书目录下证书所含的所有bundle id。你可以选择一个，然后第三项的内容会被修正。证书文件被更新或者工程被重新编译，缓存数据被清除，请点击刷新按钮重新解析证书导入缓存。</li>
+<li>当前证书目录下证书所含的所有bundle id。可以选择1个，第三项的bundle id会随之改变。</li>
+<li>Xcode的bitcode选项。万恶之源，请保持他勾上，不如会导致时间变得很长，这里是演示怎么控制导出的Xcode工程的选项。 </li>
+<li>勾上此选项，会在出包时加上<em>BuildOptions.Development | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging</em>。</li>
+<li>工具里包含一个空场景，勾上时会只包含这个空场景，否则包含Player Settings下的场景。<br>9.如果一切顺利，点击此按钮回生成Apk包。Apk包生成后, 会弹出其所在目录。如果失败，参考3.3获取失败日志。</li>
+</ol>
+<h1 id="3-工具详述"><a href="#3-工具详述" class="headerlink" title="3. 工具详述"></a>3. 工具详述</h1><h1 id="3-1-目录结构"><a href="#3-1-目录结构" class="headerlink" title="3.1. 目录结构"></a>3.1. 目录结构</h1><p>以下文件路径均相对于IpaExporter，各文件说明如下：<br>| 文件名       | 说明    |<br>| ——–    | —–      |<br>| Config/IosBuildingOptions.json | 工具选项配置，如果没有会自动生成一份默认的。|<br>| Demo/Scene/0.unity| 演示用的空场景。 |<br>| IosProvisioningProfile/ | 证书（ *.mobileprovision）目录 。 |<br>| Editor/BuilderMenu.cs | Unity菜单 |<br>| Editor/BuildIpaWindow.cs | 一键打包页面 |<br>| Editor/IosProvisioningProfileMgr.cs | 证书的解析和管理脚本。 |<br>| Editor/IpaExporter.cs | 此脚本实现了下文3.2里的打包步骤。 |</p>
+<h1 id="3-2-打包步骤"><a href="#3-2-打包步骤" class="headerlink" title="3.2. 打包步骤"></a>3.2. 打包步骤</h1><p>点击Build按钮，会触发开始打包。打包的逻辑在文件 IpaExporter.cs里。步骤如下：</p>
+<p><img src="https://github.com/noodle1983/private/raw/master/IpaExporter/workflow.png" alt="image"></p>
 <ul>
-<li>超过一定大小，才打日志，我们一个服在线是3k左右，阀值取4096。</li>
-<li>实践发现，如果表在2的n次幂边界发生频繁切换时，resize日志会重复打，所以修改了表结构，实现每个边界只打一次。</li>
+<li>步骤 1: 准备打包环境。打包UI上的配置会从文件反序列化，并不依赖UI。这样方便从Unity命令行启动打包，方便日常的Daily Build。</li>
+<li>步骤 2: 导出XCode工程。导出工程时优先选择开发证书，方便打开XCode工程时调试。如果没有开发证书，会选择逻辑上的第一个证书（天知道是哪个，不重要，最后导出的IPA包由脚本指定）。</li>
+<li>步骤 3: 根据需要修改XCode工程。Unity5以后提供了接口，工具中把Bitcode选项禁用了。你可以加其他的capability，如推送之类的。</li>
+<li>步骤 4: XCode工程里，苹果把导出IPA文件分成了两步，分别是archive和export。这一步里工具会生成两类bash脚本，一类脚本名字为archive.sh，就一个，用来编译并生成release版的无签名archive文件；另一类脚本叫export_xxx.sh，用来生成各个Provisioning Profile对应的IPA。需要注意的是，Development Provisioning Profile没有生成对应的脚本，因为测试发现Development Provisioning Profile里的team名字可能和私钥对不上。如果你一定要生成Development版的IPA，你可能需要hard code组名（可能还有其他信息），不过大多数时候我们只生成app-store版和adhoc版的证书。 </li>
+<li>步骤 5: 执行步骤4里生成的脚本。</li>
 </ul>
-<p>所以，如果漏的不严重（&lt;4096）又不会随时间增长，是查不出来的，也就算了。</p>
-<h1 id="5-1-lua-table表结构的修改"><a href="#5-1-lua-table表结构的修改" class="headerlink" title="5.1. lua table表结构的修改"></a>5.1. lua table表结构的修改</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">typedef struct GCtab &#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  //extended by ludong</span><br><span class="line">  int32_t max_sizearray;</span><br><span class="line">  int32_t max_sizeobj;</span><br><span class="line">&#125; GCtab;</span><br></pre></td></tr></table></figure>
-<h1 id="5-2-初始化-luajit1的数值是不一样的"><a href="#5-2-初始化-luajit1的数值是不一样的" class="headerlink" title="5.2. 初始化(luajit1的数值是不一样的)"></a>5.2. 初始化(luajit1的数值是不一样的)</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/* Create a new table. Note: the slots are not initialized (yet). */</span><br><span class="line">static GCtab *newtab(lua_State *L, uint32_t asize, uint32_t hbits)</span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  t-&gt;max_sizearray = 4096;</span><br><span class="line">  t-&gt;max_sizeobj = 4096;</span><br><span class="line">  return t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="5-3-写日志"><a href="#5-3-写日志" class="headerlink" title="5.3. 写日志"></a>5.3. 写日志</h1><p>为了解决库编译依赖的问题，将上层日志函数定义为一个函数变量，进程启动时注册赋值。函数实现赋值就不贴了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">/* -- Table resizing ------------------------------------------------------ */</span><br><span class="line"></span><br><span class="line">typedef void (*lua_large_table_warn_func)( lua_State *L, char* fmt, ... );</span><br><span class="line">lua_large_table_warn_func g_lua_large_table_warn = NULL;</span><br><span class="line"></span><br><span class="line">/* Resize a table to fit the new array/hash part sizes. */</span><br><span class="line">void lj_tab_resize(lua_State *L, GCtab *t, uint32_t asize, uint32_t hbits)</span><br><span class="line">&#123;</span><br><span class="line">   ...</span><br><span class="line"></span><br><span class="line">  //--------------------------------------------------</span><br><span class="line">  // by ludong</span><br><span class="line">  // check resize time</span><br><span class="line">  if (t-&gt;asize &gt; t-&gt;max_sizearray || t-&gt;hmask &gt; t-&gt;max_sizeobj) &#123;</span><br><span class="line">      int32_t old_max_sizearray = t-&gt;max_sizearray;</span><br><span class="line">      int32_t old_max_sizeobj = t-&gt;max_sizeobj;</span><br><span class="line">      t-&gt;max_sizearray = (t-&gt;asize &gt; t-&gt;max_sizearray) ? t-&gt;asize : t-&gt;max_sizearray;</span><br><span class="line">      t-&gt;max_sizeobj = (t-&gt;hmask &gt; t-&gt;max_sizeobj) ? t-&gt;hmask : t-&gt;max_sizeobj;</span><br><span class="line">      if (g_lua_large_table_warn) &#123;</span><br><span class="line">          g_lua_large_table_warn( L, &quot;[ltable.c](resize) table:0x%x, array check size:%d, now:%d, node check size:%d, now:%d&quot;,</span><br><span class="line">            (size_t)t,</span><br><span class="line">            old_max_sizearray, t-&gt;asize,</span><br><span class="line">            old_max_sizeobj, t-&gt;hmask);</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="5-4-性能影响"><a href="#5-4-性能影响" class="headerlink" title="5.4. 性能影响"></a>5.4. 性能影响</h1><p>每个表多8字节（我们64位了，对齐后一样的，32位自己抠一抠），对大部分表多两个逻辑判断，对大表每次日志边界打一条日志和lua堆栈，内存和cpu基本都没没感觉。</p>
-<h1 id="6-后记"><a href="#6-后记" class="headerlink" title="6. 后记"></a>6. 后记</h1><p>这个方案做好之后基本是我们项目上线必检查的日志了，总会有一些不小心就没删的。</p>
+<h1 id="3-3-Logs"><a href="#3-3-Logs" class="headerlink" title="3.3. Logs"></a>3.3. Logs</h1><p>失败的时候，你可以到下面的地方查找日志：</p>
+<ul>
+<li>首先检查Unity Editor里的控制台窗口，打包步骤里1-4步如果有错误，会输出到这里。</li>
+<li>打包步骤里第五步执行脚本的日志会被输出到下面的日志文件： <em>[TheProjectPath]/OsxCmd/cmd.log</em></li>
+</ul>
+<h1 id="4-联系方式"><a href="#4-联系方式" class="headerlink" title="4. 联系方式"></a>4. 联系方式</h1><p>任何问题 Email: <a href="mailto:noodle1983@126.com" target="_blank" rel="noopener">noodle1983@126.com</a>.</p>
 
       
 
@@ -195,7 +217,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">private</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Unity iOS build</a>
         		</li>
       		
 		</ul>
@@ -251,7 +273,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/26/LuajitTableMonitor/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/20/CN-HowToUseTheIpaExporter/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -265,18 +287,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/27/server_x64_luajit/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/26/LuajitTableMonitor/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          服务器x64升级之luajit gc64
+          luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）
         
       </div>
     </a>
   
   
-    <a href="/2018/11/20/CN-HowToUseTheIpaExporter/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">一键导出Unity iOS文件</div>
+    <a href="/2018/11/18/CN-AndroidIl2cppPatchReadMeFirst/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Unity Android APP il2cpp热更完美解决方案</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -315,7 +337,7 @@
 <script src="https://jjeejj.github.io/js/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-  id: "Wed Dec 26 2018 19:32:10 GMT+0800",
+  id: "Tue Nov 20 2018 19:32:10 GMT+0800",
   owner: 'noodle1983',
   repo: 'gitment-comments',
   oauth: {
