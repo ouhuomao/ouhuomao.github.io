@@ -9,7 +9,7 @@
   <title>服务器x64升级之luajit gc64 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1. 背景是的，2018年以前，我们的服务器是32位的。 这其中很大一部分原因是luajit 2.1版本前是伪64位（原因见链接），一个vm只支持max 2G内存（超过1G效率下降…），32bit反而没这个限制。 另外一个原因是，够用。当然，发生内存泄漏的时候，总会心慌慌。 2018年我们开启了新项目，luajit 2.1分支从提交上看趋于稳定，是时候趁此机会往前走一步了。 2. 编译直接用git">
-<meta name="keywords" content="private">
+<meta name="keywords" content="server">
 <meta property="og:type" content="article">
 <meta property="og:title" content="服务器x64升级之luajit gc64">
 <meta property="og:url" content="http://yoursite.com/2018/12/27/server_x64_luajit/index.html">
@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/luajit_call_mmap.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/lj_alloc_macro.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/lua_link.png">
-<meta property="og:updated_time" content="2018-12-27T04:00:16.581Z">
+<meta property="og:updated_time" content="2018-12-28T08:02:20.786Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="服务器x64升级之luajit gc64">
 <meta name="twitter:description" content="1. 背景是的，2018年以前，我们的服务器是32位的。 这其中很大一部分原因是luajit 2.1版本前是伪64位（原因见链接），一个vm只支持max 2G内存（超过1G效率下降…），32bit反而没这个限制。 另外一个原因是，够用。当然，发生内存泄漏的时候，总会心慌慌。 2018年我们开启了新项目，luajit 2.1分支从提交上看趋于稳定，是时候趁此机会往前走一步了。 2. 编译直接用git">
@@ -186,7 +186,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">private</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">server</a>
         		</li>
       		
 		</ul>
@@ -255,6 +255,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2018/12/27/server_x64_libunwind_memory_leak/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          服务器x64升级之libunwind内存泄漏
+        
+      </div>
+    </a>
   
   
     <a href="/2018/12/26/LuajitTableMonitor/" id="article-nav-older" class="article-nav-link-wrap">
@@ -392,7 +401,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -400,7 +409,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+                <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">server</a>
               </li>
             
             <div class="clearfix"></div>
