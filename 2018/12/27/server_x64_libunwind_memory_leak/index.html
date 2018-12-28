@@ -21,7 +21,7 @@
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue_size.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/get_caller_stack.png">
-<meta property="og:updated_time" content="2018-12-28T08:07:23.946Z">
+<meta property="og:updated_time" content="2018-12-28T08:09:46.298Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="服务器x64升级之libunwind内存泄漏">
 <meta name="twitter:description" content="1. 背景关于为什么需要做x64升级的原因参见上篇。这里分享的是升级之后发生的一次诡异的内存泄漏。 2. 问题表现 刷怪之后，内存随时间明显上涨，RES大概2MB/5s，但怪物数量无变化。 诡异的是，内存的增长没有表现在内存分配器无任何表现。  3. 分析过程最初始的怀疑对象是新引入的腾讯的behaviac组件，因为刷怪之后内存涨得特别明显。经过简单地查找，发现behaviac组件确实有自己的内存">
@@ -174,7 +174,8 @@
 <li>tcmalloc, tcmalloc的逻辑都是析构时调用libunwind记录堆栈（析构的堆栈做什么用的呢？如果一个地址被free了两次，第一次会记录下析构时的堆栈，第二次会core dump，tcmalloc可以打印第一次析构的堆栈，堆栈存的是地址，addr2line可以取回文件和行号。如果你在搭一个多线程框架，这个很有用，扯远了，先回来，内存分配器改天开篇聊）。这种逻辑，debug版本才会有，编译release版本试了一下，果然就不漏了，和骏图那边也确认了。</li>
 <li>libuwind, 取堆栈</li>
 </ul>
-<p>直觉上怀疑是tcmalloc没删这部分堆栈信息（上图frame 16），查看发现这部分堆栈信息是个池子，撑死10M<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue.png" alt="free_queue"><br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue_size.png" alt="free_queue_size"></p>
+<p>直觉上怀疑是tcmalloc没删这部分堆栈信息（上图frame 16），查看发现这部分堆栈信息是个池子，撑死10M<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue.png" alt="free_queue"></p>
+<p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue_size.png" alt="free_queue_size"></p>
 <p>在往上看frame 15，源码如下，MallocBlockQueueEntry传了16个指针数组给libunwind填空，和libunwind的交互不需要再分配什么内存，tcmalloc也不需要调libunwind接口释放什么东西， 所以就libunwind自己申请的得自己管理，这样子的话，就是libunwind漏了。<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/get_caller_stack.png" alt="get_caller_stack"></p>
 <p>一阵小郁闷，libunwind咱不熟，仔细看堆栈，libunwind部分也不完全一样。不过这库挺老了，用的人多，应该会有人报bug，遂Google “libunwind memory leak”。果不其然，真找着了，<a href="https://lists.nongnu.org/archive/html/libunwind-devel/2013-04/msg00000.html" target="_blank" rel="noopener">链接</a>。</p>
 <p>我们用的版本是libunwind-0.99-beta，tcmalloc推荐版，老了，和链接的代码长得不一样，照着描，core了几次之后最终版diff如下，中间过程也不表了.好吧，老实说不记得了，其实我现在看回改过的代码也挺懵B的，算了不是研究这个的。。。好吧，我还是记得只是一些先后顺序的问题，但是读者不会满意的:(。</p>
@@ -263,18 +264,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/27/server_x64_luajit/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          服务器x64升级之luajit gc64
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/12/26/LuajitTableMonitor/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）</div>
+    <a href="/2018/12/27/server_x64_luajit/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">服务器x64升级之luajit gc64</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -416,11 +408,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server</a>
+                <a href="javascript:void(0)" class="js-tag color3">private</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">private</a>
+                <a href="javascript:void(0)" class="js-tag color2">server</a>
               </li>
             
             <div class="clearfix"></div>
