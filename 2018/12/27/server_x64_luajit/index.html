@@ -8,21 +8,21 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>服务器x64升级之luajit gc64 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1. 背景是的，2018年以前，我们的服务器是32位的。 这其中很大一部分原因是luajit 2.1版本前是伪64位（原因见链接），一个vm只支持max 2G内存（超过1G效率下降…），32bit反而没这个限制。 另外一个原因是，够用。当然，发生内存泄漏的时候，总会心慌慌。 2018年我们开启了新项目，luajit 2.1分支从提交上看趋于稳定，是时候趁此机会往前走一步了。 2. 编译直接用git">
+  <meta name="description" content="1. 背景是的，2018年以前，我们的服务器是32位程序，超过4GB内存会挂。 这其中很大一部分原因是luajit 2.1版本前内存受限（原因见链接），一个vm只支持不超过2GB的内存（看下面的图里的编译选项，MAP_32BIT 只能1G，开了LJ_ALLOC_MMAP_PROBE能到2G, GC64往下看。。。 oh,no,写文档前一直以为MAP_32BIT是2G，没实践过，前面的链接也没仔细看">
 <meta name="keywords" content="server">
 <meta property="og:type" content="article">
 <meta property="og:title" content="服务器x64升级之luajit gc64">
 <meta property="og:url" content="http://yoursite.com/2018/12/27/server_x64_luajit/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
-<meta property="og:description" content="1. 背景是的，2018年以前，我们的服务器是32位的。 这其中很大一部分原因是luajit 2.1版本前是伪64位（原因见链接），一个vm只支持max 2G内存（超过1G效率下降…），32bit反而没这个限制。 另外一个原因是，够用。当然，发生内存泄漏的时候，总会心慌慌。 2018年我们开启了新项目，luajit 2.1分支从提交上看趋于稳定，是时候趁此机会往前走一步了。 2. 编译直接用git">
+<meta property="og:description" content="1. 背景是的，2018年以前，我们的服务器是32位程序，超过4GB内存会挂。 这其中很大一部分原因是luajit 2.1版本前内存受限（原因见链接），一个vm只支持不超过2GB的内存（看下面的图里的编译选项，MAP_32BIT 只能1G，开了LJ_ALLOC_MMAP_PROBE能到2G, GC64往下看。。。 oh,no,写文档前一直以为MAP_32BIT是2G，没实践过，前面的链接也没仔细看">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/luajit_call_mmap.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/lj_alloc_macro.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/lua_link.png">
-<meta property="og:updated_time" content="2018-12-28T08:02:20.786Z">
+<meta property="og:updated_time" content="2018-12-28T12:18:59.021Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="服务器x64升级之luajit gc64">
-<meta name="twitter:description" content="1. 背景是的，2018年以前，我们的服务器是32位的。 这其中很大一部分原因是luajit 2.1版本前是伪64位（原因见链接），一个vm只支持max 2G内存（超过1G效率下降…），32bit反而没这个限制。 另外一个原因是，够用。当然，发生内存泄漏的时候，总会心慌慌。 2018年我们开启了新项目，luajit 2.1分支从提交上看趋于稳定，是时候趁此机会往前走一步了。 2. 编译直接用git">
+<meta name="twitter:description" content="1. 背景是的，2018年以前，我们的服务器是32位程序，超过4GB内存会挂。 这其中很大一部分原因是luajit 2.1版本前内存受限（原因见链接），一个vm只支持不超过2GB的内存（看下面的图里的编译选项，MAP_32BIT 只能1G，开了LJ_ALLOC_MMAP_PROBE能到2G, GC64往下看。。。 oh,no,写文档前一直以为MAP_32BIT是2G，没实践过，前面的链接也没仔细看">
 <meta name="twitter:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/luajit_call_mmap.png">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
@@ -157,22 +157,22 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>是的，2018年以前，我们的服务器是32位的。</p>
-<p>这其中很大一部分原因是luajit 2.1版本前是伪64位（原因见<a href="https://stackoverflow.com/questions/35155444/why-is-luajits-memory-limited-to-1-2-gb-on-64-bit-platforms" target="_blank" rel="noopener">链接</a>），一个vm只支持max 2G内存（超过1G效率下降…），32bit反而没这个限制。</p>
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>是的，2018年以前，我们的服务器是32位程序，超过4GB内存会挂。</p>
+<p>这其中很大一部分原因是luajit 2.1版本前内存受限（原因见<a href="https://stackoverflow.com/questions/35155444/why-is-luajits-memory-limited-to-1-2-gb-on-64-bit-platforms" target="_blank" rel="noopener">链接</a>），一个vm只支持不超过2GB的内存（看下面的图里的编译选项，MAP_32BIT 只能1G，开了LJ_ALLOC_MMAP_PROBE能到2G, GC64往下看。。。 oh,no,写文档前一直以为MAP_32BIT是2G，没实践过，前面的链接也没仔细看），32位程序反而没这个限制。</p>
 <p>另外一个原因是，够用。当然，发生<a href="https://noodle1983.github.io/2018/12/26/LuajitTableMonitor/" target="_blank" rel="noopener">内存泄漏</a>的时候，总会心慌慌。</p>
 <p>2018年我们开启了新项目，luajit 2.1分支从提交上看趋于稳定，是时候趁此机会往前走一步了。</p>
 <h1 id="2-编译"><a href="#2-编译" class="headerlink" title="2. 编译"></a>2. 编译</h1><p>直接用git上最新代码，不过得选对分支，默认master是2.0（我就这样掉了一下坑），看来一下今年以来的改动基本都是修修小bug，影响不大，应该是稳定了。</p>
 <p>在Makefile里打开GC64选项，为了方便gdb，把调试符号给加上。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Uncomment the next line to generate debug information:</span><br><span class="line">CCDEBUG= -g</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"># Enable GC64 mode for x64.</span><br><span class="line">XCFLAGS+= -DLUAJIT_ENABLE_GC64</span><br></pre></td></tr></table></figure>
-<p>编译，测试，嘿嘿，不行，能怎样，调呗。关键字mmap，找到这段代码。</p>
+<p>编译，测试，不行，调。关键字mmap，找到这段代码。</p>
 <p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/luajit_call_mmap.png" alt="luajit_call_mmap"></p>
-<p>宏隔开，三段，用“#error msg”编译，用的是LJ_ALLOC_MMAP_PROBE这段。把宏定义取消，重新编译，就ok了。</p>
+<p>宏隔开，三段，用“#error msg”编译，用的是LJ_ALLOC_MMAP_PROBE这段。把下面的宏定义取消，重新编译，就ok了。</p>
 <p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/lj_alloc_macro.png" alt="lj_alloc_macro"></p>
-<p>(补充一下，仔细看上图，GC64可用多少内存？现在的面试官还是挺喜欢问这种问题的，唉，可怜我再看10遍也只是记得够用，笔者炫耀一下在电信行业测试最大的core dump是46GB，漏着跑了一夜，太大了，mdb都没法加载，之后再也没用过这么大内存的机器了，哈哈哈)</p>
+<p>(补充一下，仔细看上图，GC64可用多少内存？128TB，够用了，笔者在电信行业见过最大的core dump是46GB，漏着跑了一夜，太大了，mdb都没法加载，之后再也没用过这么大内存的机器了，哈哈哈)</p>
 <p>到这里，就差不多了，我们新项目用着没问题。</p>
 <h1 id="3-其他"><a href="#3-其他" class="headerlink" title="3. 其他"></a>3. 其他</h1><h1 id="3-1-lua文件编译的变化"><a href="#3-1-lua文件编译的变化" class="headerlink" title="3.1. lua文件编译的变化"></a>3.1. lua文件编译的变化</h1><p>luajit 2.1中lua和luac两个命令合一，都叫luajit，把之前的lua和luac改成软链。<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/lua_link.png" alt="lua_link.png"></p>
 <p>Makefile（也是我弄的，设计挺轻巧的，改天开篇讲，<a href="https://github.com/noodle1983/framework-nd/blob/master/build/makefile.compile.rules" target="_blank" rel="noopener">7年前初始版</a>）相应修改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- $(PROJBASE)/lib/bin/luac -o $(DEST_OUTDIR)/&#123;&#125;.lc &#123;&#125;.lua</span><br><span class="line">+ LUA_PATH=$(PROJBASE)/lib/bin/?.lua $(PROJBASE)/lib/bin/luac -O3 -bg &#123;&#125;.lua $(DEST_OUTDIR)/&#123;&#125;.lc</span><br></pre></td></tr></table></figure></p>
-<p>其他改asset版本号自己find + xargs + sed改一下，debug不用设，opt level默认3，lua内断点依然生效，没特别关注，项目跑了几个月，这块没出什么问题。倒是tcmalloc + libunwind出了些问题，下篇讲。</p>
+<p>其他改asset版本号自己find + xargs + sed改一下，debug不用设，opt level默认3，lua内断点依然生效，没特别关注，项目跑了几个月，这块没出什么问题。倒是tcmalloc + libunwind出了些问题，<a href="https://noodle1983.github.io/2018/12/27/server_x64_libunwind_memory_leak/" target="_blank" rel="noopener">下篇</a>讲。</p>
 
       
 
@@ -256,7 +256,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/27/server_x64_libunwind_memory_leak/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/28/server_x64_libunwind_memory_leak/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -401,7 +401,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+                <a href="javascript:void(0)" class="js-tag color2">server</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -409,11 +409,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">private</a>
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server</a>
+                <a href="javascript:void(0)" class="js-tag color3">private</a>
               </li>
             
             <div class="clearfix"></div>
