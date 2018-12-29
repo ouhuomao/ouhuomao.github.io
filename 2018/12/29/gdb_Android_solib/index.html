@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Restart Android App In Unity Pure C# | Noodle&#39;s blog</title>
+  <title>gdb调试Android动态库脚本 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Restart Android App In Unity Pure C# So far so good 12345678910111213141516171819202122using (AndroidJavaClass unityPlayer = new AndroidJavaClass(&amp;quot;com.unity3d.player.UnityPlayer&amp;quot;))&amp;#123;">
+  <meta name="description" content="1. 背景 为什么会弄这玩意？因为要弄这个热更工具，gdb是绕不过的坎。为什么要弄这个工具，因为我们一直以来客户端世界里都没有lua（Miniserver的不算，那就是跑在客户端的服务器，通过网络层和客户端通信），多个东西多个鬼，能少则少。 理论上，ndk提供了gdb的封装脚本ndk-gdb，理论上能方便无缝地像在linux server一样远程连gdbserver。但因为gdb所在环境和手机环境">
+<meta name="keywords" content="Android NDK gdb">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Restart Android App In Unity Pure C#">
-<meta property="og:url" content="http://yoursite.com/2018/11/17/RestartAndroidAppInUnityPureC/index.html">
+<meta property="og:title" content="gdb调试Android动态库脚本">
+<meta property="og:url" content="http://yoursite.com/2018/12/29/gdb_Android_solib/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
-<meta property="og:description" content="Restart Android App In Unity Pure C# So far so good 12345678910111213141516171819202122using (AndroidJavaClass unityPlayer = new AndroidJavaClass(&amp;quot;com.unity3d.player.UnityPlayer&amp;quot;))&amp;#123;">
+<meta property="og:description" content="1. 背景 为什么会弄这玩意？因为要弄这个热更工具，gdb是绕不过的坎。为什么要弄这个工具，因为我们一直以来客户端世界里都没有lua（Miniserver的不算，那就是跑在客户端的服务器，通过网络层和客户端通信），多个东西多个鬼，能少则少。 理论上，ndk提供了gdb的封装脚本ndk-gdb，理论上能方便无缝地像在linux server一样远程连gdbserver。但因为gdb所在环境和手机环境">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-19T02:13:59.176Z">
+<meta property="og:updated_time" content="2018-12-29T15:42:08.242Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Restart Android App In Unity Pure C#">
-<meta name="twitter:description" content="Restart Android App In Unity Pure C# So far so good 12345678910111213141516171819202122using (AndroidJavaClass unityPlayer = new AndroidJavaClass(&amp;quot;com.unity3d.player.UnityPlayer&amp;quot;))&amp;#123;">
+<meta name="twitter:title" content="gdb调试Android动态库脚本">
+<meta name="twitter:description" content="1. 背景 为什么会弄这玩意？因为要弄这个热更工具，gdb是绕不过的坎。为什么要弄这个工具，因为我们一直以来客户端世界里都没有lua（Miniserver的不算，那就是跑在客户端的服务器，通过网络层和客户端通信），多个东西多个鬼，能少则少。 理论上，ndk提供了gdb的封装脚本ndk-gdb，理论上能方便无缝地像在linux server一样远程连gdbserver。但因为gdb所在环境和手机环境">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
   
@@ -132,29 +133,63 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-RestartAndroidAppInUnityPureC" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-gdb_Android_solib" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Restart Android App In Unity Pure C#
+      gdb调试Android动态库脚本
     </h1>
   
 
         
-        <a href="/2018/11/17/RestartAndroidAppInUnityPureC/" class="archive-article-date">
-  	<time datetime="2018-11-17T11:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-17</time>
+        <a href="/2018/12/29/gdb_Android_solib/" class="archive-article-date">
+  	<time datetime="2018-12-29T15:42:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Restart Android App In Unity Pure C#</p>
-<p>So far so good</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">using (AndroidJavaClass unityPlayer = new AndroidJavaClass(&quot;com.unity3d.player.UnityPlayer&quot;))</span><br><span class="line">&#123;</span><br><span class="line">    AndroidJavaObject currentActivity = unityPlayer.GetStatic&lt;AndroidJavaObject&gt;(&quot;currentActivity&quot;);</span><br><span class="line"></span><br><span class="line">    AndroidJavaObject pm = currentActivity.Call&lt;AndroidJavaObject&gt;(&quot;getPackageManager&quot;);</span><br><span class="line">    AndroidJavaObject intent = pm.Call&lt;AndroidJavaObject&gt;(&quot;getLaunchIntentForPackage&quot;, Application.identifier);</span><br><span class="line">    intent.Call&lt;AndroidJavaObject&gt;(&quot;setFlags&quot;, 0x20000000);//Intent.FLAG_ACTIVITY_SINGLE_TOP</span><br><span class="line"></span><br><span class="line">    AndroidJavaClass pendingIntent = new AndroidJavaClass(&quot;android.app.PendingIntent&quot;);</span><br><span class="line">    AndroidJavaObject contentIntent = pendingIntent.CallStatic&lt;AndroidJavaObject&gt;(&quot;getActivity&quot;, currentActivity, 0, intent, 0x8000000); //PendingIntent.FLAG_UPDATE_CURRENT = 134217728 [0x8000000]</span><br><span class="line">    AndroidJavaObject alarmManager = currentActivity.Call&lt;AndroidJavaObject&gt;(&quot;getSystemService&quot;, &quot;alarm&quot;);</span><br><span class="line">    AndroidJavaClass system = new AndroidJavaClass(&quot;java.lang.System&quot;);</span><br><span class="line">    long currentTime = system.CallStatic&lt;long&gt;(&quot;currentTimeMillis&quot;);</span><br><span class="line">    alarmManager.Call(&quot;set&quot;, 1, currentTime + 1000, contentIntent); // android.app.AlarmManager.RTC = 1 [0x1]</span><br><span class="line"></span><br><span class="line">    Debug.LogError(&quot;alarm_manager set time &quot; + currentTime + 1000);</span><br><span class="line">    currentActivity.Call(&quot;finish&quot;);</span><br><span class="line"></span><br><span class="line">    AndroidJavaClass process = new AndroidJavaClass(&quot;android.os.Process&quot;);</span><br><span class="line">    int pid = process.CallStatic&lt;int&gt;(&quot;myPid&quot;);</span><br><span class="line">    process.CallStatic(&quot;killProcess&quot;, pid);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><ul>
+<li>为什么会弄这玩意？因为要弄这个<a href="https://github.com/noodle1983/UnityAndroidIl2cppPatchDemo" target="_blank" rel="noopener">热更工具</a>，gdb是绕不过的坎。为什么要弄这个工具，因为我们一直以来客户端世界里都没有lua（Miniserver的不算，那就是跑在客户端的服务器，通过网络层和客户端通信），多个东西多个鬼，能少则少。</li>
+<li>理论上，ndk提供了gdb的封装脚本ndk-gdb，理论上能方便无缝地像在linux server一样远程连gdbserver。但因为gdb所在环境和手机环境的多样性，这个脚本基本跑不通。而且这个脚本不稳定，也在随版本号升级，你可以想象把脚本过一遍，还原出该设的环境变量，一升级，日了狗了，又不行了，还得再过一遍。×#&amp;%￥！，还是把里面的东西扒出来，直接用gdb。但即使是自己来，各个命令的表现在不同环境的表现还是有差异，在最新版本，adb shell的命令就一直不能跑在后台。</li>
+</ul>
+<h1 id="2-调试"><a href="#2-调试" class="headerlink" title="2. 调试"></a>2. 调试</h1><p>以下脚本均为bash脚本，在git bash下执行。gdb调试android的动态库，本质和gdb远程调试Linux程序一样：远端启动gdbserver attach上要调试的应用，同时开放监听端口，然后gdb远程连上去调试。所以其涉及远端（Android）和本机两个系统。</p>
+<h1 id="2-1-准备环境变量"><a href="#2-1-准备环境变量" class="headerlink" title="2.1. 准备环境变量"></a>2.1. 准备环境变量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export PACKAGE_NAME=com.test.test</span><br><span class="line">export NDK=/d/android-ndk-r13b/</span><br><span class="line">export GDBSERVER_BIN=$NDK/prebuilt/android-x86/gdbserver/gdbserver</span><br><span class="line">export GDBC=$NDK/prebuilt/windows-x86_64/bin/gdb.exe</span><br><span class="line">export START_ACTIVITY=$PACKAGE_NAME/$PACKAGE_NAME.UnityPlayerActivity</span><br></pre></td></tr></table></figure>
+<p>就这几个，因人而异，自己改，都很简单，不多做解释了，下面的命令会用到。</p>
+<h1 id="2-2-准备远端环境"><a href="#2-2-准备远端环境" class="headerlink" title="2.2. 准备远端环境"></a>2.2. 准备远端环境</h1><p>用Debug版本的动态库构建App，安装App，App本身是不是debug版本无所谓（App的这个debug版本是给java调试用的）。其实用Release版本的动态库也可以调，只是所有调试信息都没了，只能用绝对地址下断点，想看参数得直接用栈指针，像下面这样。（知道我被人问，-g信息是什么的感觉不？没有-g能调试不？那得看你调什么）Ok，这么说，读者应该知道怎么灵活选择了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">b __android_log_print</span><br><span class="line">commands</span><br><span class="line">silent</span><br><span class="line">printf &quot;string:%s\n&quot;, *(char**)($esp+12)</span><br><span class="line">bt</span><br><span class="line">cont</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<h1 id="2-3-准备本机环境"><a href="#2-3-准备本机环境" class="headerlink" title="2.3. 准备本机环境"></a>2.3. 准备本机环境</h1><ul>
+<li>得保证能连上手机，adb，驱动得装好。</li>
+<li>本机环境我用的是Windows + git bash，如果你用其他环境，既然你都用了，我相信你能处理好。</li>
+<li>建个空目录，在里面启动git bash，执行以下脚本，而且每次App内动态库有变化，都要执行一次。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># 把端口映射打开，adb负责把本机的5039端口，映射到远端Android的5039端口</span><br><span class="line">adb forward tcp:5039 tcp:5039 </span><br><span class="line"></span><br><span class="line">#把远端Android的动态库取回本地，因为gdb只能从本地加载符号</span><br><span class="line">#注意路径前无/，不然读者可以试试，很讨厌的</span><br><span class="line">adb pull system/bin/app_process</span><br><span class="line">adb pull system/bin/linker</span><br><span class="line">adb pull system/lib/libc.so</span><br><span class="line">adb pull data/data/$PACKAGE_NAME/lib/lib*.so</span><br><span class="line"></span><br><span class="line"># gdb.setup是gdb启动的初始化脚本，省得每次gdb再敲一堆命令</span><br><span class="line"># 脚本里忽略两个中断信号，设置so符号查找路径为本目录，然后连接远程的gdbserver</span><br><span class="line">cat &gt;gdb.setup &lt;&lt;END_OF_GDB</span><br><span class="line">handle SIGPWR nostop</span><br><span class="line">handle SIGXCPU nostop</span><br><span class="line">set solib-search-path .</span><br><span class="line"></span><br><span class="line">target remote 127.0.0.1:5039</span><br><span class="line">END_OF_GDB</span><br><span class="line"></span><br><span class="line">echo &quot;install gdbserver ...&quot;</span><br><span class="line">copy $GDBSERVER_BIN .</span><br><span class="line">adb push  gdbserver  data/local/tmp/gdbserver</span><br><span class="line">adb shell chmod 777 data/local/tmp/gdbserver</span><br></pre></td></tr></table></figure>
+<h1 id="2-4-先封一些函数，方便使用"><a href="#2-4-先封一些函数，方便使用" class="headerlink" title="2.4. 先封一些函数，方便使用"></a>2.4. 先封一些函数，方便使用</h1><ul>
+<li>启动app前，上次调试环境可能还在，下面是清理的函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function kill_gdbserver()&#123;</span><br><span class="line">    GDBSERVER_PID=`adb shell &quot;ps |grep gdbserver&quot; |awk &apos;&#123;print $2;&#125;&apos;`</span><br><span class="line">    if [ &quot;$GDBSERVER_PID&quot; != &quot;&quot; ]; then</span><br><span class="line">        echo &quot;kill pre gdb server process id:$GDBSERVER_PID&quot;</span><br><span class="line">        adb shell kill -9 $GDBSERVER_PID</span><br><span class="line">    fi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>启动app。启动前清理可能的gdbserver和可能的残留app，启动命令自己按需修改</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function start_app()&#123;</span><br><span class="line">    kill_gdbserver</span><br><span class="line">    APP_PID=`adb shell &quot;ps | grep -v &apos; Z &apos; |grep $PACKAGE_NAME&quot; | awk &apos;&#123;print $2;&#125;&apos;`</span><br><span class="line">    if [ &quot;$APP_PID&quot; != &quot;&quot; ]; then</span><br><span class="line">        echo &quot;kill pre $PACKAGE_NAME process id:$APP_PID&quot;</span><br><span class="line">        adb shell kill -9 $APP_PID</span><br><span class="line">    fi</span><br><span class="line">    </span><br><span class="line">    adb shell am start -W -n $START_ACTIVITY</span><br><span class="line">    APP_PID=`adb shell &quot;ps | grep -v &apos; Z &apos; |grep $PACKAGE_NAME&quot; | awk &apos;&#123;print $2;&#125;&apos;`</span><br><span class="line">    echo &quot;app process id:$APP_PID&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>计算各个库的代码段加载地址，因为gdb只能从本地环境加载符号。理论上每次启动，都需要计算一次，但是只要App没变化，动态库在App的内存空间中的地址不变，所以，在App第一次启动的时候做一次就行。计算后会加载库的命令给准备好，追加到gdb.setup中。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function map_app()&#123;</span><br><span class="line">    echo &quot;mapping addr..&quot;</span><br><span class="line">    APP_PID=`adb shell &quot;ps | grep -v &apos; Z &apos; |grep $PACKAGE_NAME&quot; | awk &apos;&#123;print $2;&#125;&apos;`</span><br><span class="line">    adb shell cat /proc/$APP_PID/maps &gt; maps</span><br><span class="line">    sed -i -e &apos;/add-symbol-file/d&apos; gdb.setup</span><br><span class="line">    ls lib*.so linker |xargs -n 1 -i bash -c &quot;printf &apos;add-symbol-file &#123;&#125; (0x&apos; &amp;&amp; (grep &#123;&#125; maps | grep &apos;r-xp&apos; | sed -e &apos;s/-.*$//&apos; | tr -d &apos;\r\n&apos;)&amp;&amp; printf &apos;+0x&apos; &amp;&amp; (readelf -S &#123;&#125;|grep &apos; .text &apos; | sed -e &apos;s/^.*PROGBITS\s*//&apos; -e &apos;s/\s.*$//&apos; |tr -d &apos;\r\n&apos;) &amp;&amp; echo &apos;)&apos;&quot; | sed -e &apos;s/^\(.*\)0x+/#not fould in maps -&gt;\10x0+/&apos; &gt;&gt;gdb.setup</span><br><span class="line">    </span><br><span class="line">    cat gdb.setup|grep add-symbol-file</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在远端启动gdbserver，attach app</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function attach_app()&#123;</span><br><span class="line">    echo &quot;killing launched gdbserver if any...&quot;</span><br><span class="line">    kill_gdbserver</span><br><span class="line">    </span><br><span class="line">    echo &quot;starting gdbserver attaching $PACKAGE_NAME...&quot;</span><br><span class="line">    APP_PID=`adb shell &quot;ps | grep -v &apos; Z &apos; |grep $PACKAGE_NAME&quot; | awk &apos;&#123;print $2;&#125;&apos;`</span><br><span class="line">    adb shell &quot;data/local/tmp/gdbserver --attach :5039 $APP_PID &amp;&quot; </span><br><span class="line">    </span><br><span class="line">    echo &quot;data/local/tmp/gdbserver --attach :5039 $APP_PID &amp;&quot;</span><br><span class="line">    #sleep 1</span><br><span class="line">    </span><br><span class="line">    #下面的注释掉了，因为升了版本后，跑到这就挂起了，下面就跑不到了</span><br><span class="line">    #笔者只能另开中断跑下面的命令，就注释掉了</span><br><span class="line">    #echo &quot;running gdb...&quot;</span><br><span class="line">    #$GDBC -x ./gdb.setup </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="2-5-调"><a href="#2-5-调" class="headerlink" title="2.5. 调"></a>2.5. 调</h1><p>建议开三个终端（git bash），全都定义好变量和封装的函数。<br>一个跑</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start_app</span><br></pre></td></tr></table></figure>
+<p>一个接着跑</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">attach_app</span><br></pre></td></tr></table></figure>
+<p>最后一个跑</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">map_app #这条命令比较慢，仅第一次启动的时候跑就好了</span><br><span class="line">$GDBC -x ./gdb.setup</span><br></pre></td></tr></table></figure>
+<p>然后，读者就可以放飞自我了。</p>
 
       
 
@@ -163,6 +198,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Android NDK gdb</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -213,7 +259,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/17/RestartAndroidAppInUnityPureC/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/29/gdb_Android_solib/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -227,18 +273,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/11/18/CN-AndroidIl2cppPatchReadMeFirst/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Unity Android APP il2cpp热更完美解决方案
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/11/2018珠海航展攻略/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">2018珠海航展攻略</div>
+    <a href="/2018/12/28/server_x64_libunwind_memory_leak/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">服务器x64升级之libunwind内存泄漏</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -277,7 +314,7 @@
 <script src="https://jjeejj.github.io/js/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-  id: "Sat Nov 17 2018 19:32:10 GMT+0800",
+  id: "Sat Dec 29 2018 23:42:10 GMT+0800",
   owner: 'noodle1983',
   repo: 'gitment-comments',
   oauth: {

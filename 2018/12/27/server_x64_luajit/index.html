@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/luajit_call_mmap.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/lj_alloc_macro.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/lua_link.png">
-<meta property="og:updated_time" content="2018-12-28T12:18:59.021Z">
+<meta property="og:updated_time" content="2018-12-28T13:44:12.162Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="服务器x64升级之luajit gc64">
 <meta name="twitter:description" content="1. 背景是的，2018年以前，我们的服务器是32位程序，超过4GB内存会挂。 这其中很大一部分原因是luajit 2.1版本前内存受限（原因见链接），一个vm只支持不超过2GB的内存（看下面的图里的编译选项，MAP_32BIT 只能1G，开了LJ_ALLOC_MMAP_PROBE能到2G, GC64往下看。。。 oh,no,写文档前一直以为MAP_32BIT是2G，没实践过，前面的链接也没仔细看">
@@ -405,11 +405,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+                <a href="javascript:void(0)" class="js-tag color1">Android NDK gdb</a>
               </li>
              
               <li class="article-tag-list-item">
