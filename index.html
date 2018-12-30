@@ -151,13 +151,13 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><ul>
-<li>为什么会弄这玩意？因为要弄这个<a href="https://github.com/noodle1983/UnityAndroidIl2cppPatchDemo" target="_blank" rel="noopener">热更工具</a>，gdb是绕不过的坎。为什么要弄这个工具，因为我们一直以来客户端世界里都没有lua（Miniserver的不算，那就是跑在客户端的服务器，通过网络层和客户端通信），多个东西多个鬼，能少则少。</li>
-<li>理论上，ndk提供了gdb的封装脚本ndk-gdb，理论上能方便无缝地像在linux server一样远程连gdbserver。但因为gdb所在环境和手机环境的多样性，这个脚本基本跑不通。而且这个脚本不稳定，也在随版本号升级，你可以想象把脚本过一遍，还原出该设的环境变量，一升级，日了狗了，又不行了，还得再过一遍。×#&amp;%￥！，还是把里面的东西扒出来，直接用gdb。但即使是自己来，各个命令在不同环境的表现还是有差异，在最新版本，adb shell的后台命令就一直占着前台。</li>
+<li>为什么会弄这玩意？因为要弄这个<a href="https://github.com/noodle1983/UnityAndroidIl2cppPatchDemo" target="_blank" rel="noopener">热更工具</a>，gdb是绕不过的坎。为什么要弄这个工具，因为我们一直以来客户端世界里都没有lua（Miniserver的不算，那就是跑在客户端的服务器，通过网络层和客户端通信），用ulua之类的大家都得学，多个东西多个鬼，能少则少。</li>
+<li>理论上，ndk提供了gdb的封装脚本ndk-gdb，理论上能方便无缝地像在linux server一样远程连gdbserver。但因为gdb所在环境和手机环境的多样性，这个脚本基本跑不通。而且这个脚本不稳定，也在随版本号升级，你可以想象把脚本过一遍，还原出该设的环境变量，一升级，日了狗了，又不行了，还得再过一遍。×#&amp;%￥！，还是把里面的东西扒出来，直接用gdb+gdbserver。但即使是直接用gdb+gdbserver，各个命令在不同环境的表现还是有差异，例如原来能用的adb shell的后台命令更新后就一直占着前台。</li>
 </ul>
 <h1 id="2-调试"><a href="#2-调试" class="headerlink" title="2. 调试"></a>2. 调试</h1><p>以下脚本均为bash脚本，在git bash下执行。gdb调试android的动态库，本质和gdb远程调试Linux程序一样：远端启动gdbserver attach上要调试的应用，同时开放监听端口，然后gdb远程连上去调试。所以其涉及远端（Android）和本机两个系统。</p>
 <h1 id="2-1-准备环境变量"><a href="#2-1-准备环境变量" class="headerlink" title="2.1. 准备环境变量"></a>2.1. 准备环境变量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export PACKAGE_NAME=com.test.test</span><br><span class="line">export NDK=/d/android-ndk-r13b/</span><br><span class="line">export GDBSERVER_BIN=$NDK/prebuilt/android-x86/gdbserver/gdbserver</span><br><span class="line">export GDBC=$NDK/prebuilt/windows-x86_64/bin/gdb.exe</span><br><span class="line">export START_ACTIVITY=$PACKAGE_NAME/$PACKAGE_NAME.UnityPlayerActivity</span><br></pre></td></tr></table></figure>
-<p>就这几个，因人而异，自己改，都很简单，不多做解释了，下面的命令会用到。</p>
-<h1 id="2-2-准备远端环境"><a href="#2-2-准备远端环境" class="headerlink" title="2.2. 准备远端环境"></a>2.2. 准备远端环境</h1><p>用Debug版本的动态库构建App，安装App，App本身是不是debug版本无所谓（App的这个debug版本是给java调试用的）。其实用Release版本的动态库也可以调，只是所有调试信息都没了，只能用绝对地址下断点，想看参数得直接用栈指针，像下面这样。（知道我被人问，-g信息是什么的感觉不？没有-g能调试不？那得看你调什么）Ok，这么说，读者应该知道怎么灵活选择了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">b __android_log_print</span><br><span class="line">commands</span><br><span class="line">silent</span><br><span class="line">printf &quot;string:%s\n&quot;, *(char**)($esp+12)</span><br><span class="line">bt</span><br><span class="line">cont</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>就这几个，因人而异，自己改，都很简单，不多做解释了，下面的命令会用到。<br>我用的是模拟器，所以用的是x86版本的。</p>
+<h1 id="2-2-准备远端环境"><a href="#2-2-准备远端环境" class="headerlink" title="2.2. 准备远端环境"></a>2.2. 准备远端环境</h1><p>用Debug版本的动态库构建App，安装App，App本身是不是debug版本无所谓（App的这个debug版本是给java调试用的）。其实用Release版本的动态库也可以调，只是所有调试信息都没了，只能用public的符号或绝对地址下断点，想看参数得直接用栈指针，像下面这样。Ok，这么说，读者应该知道怎么灵活选择了，你想调的那个库是Debug版就行了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">b __android_log_print</span><br><span class="line">commands</span><br><span class="line">silent</span><br><span class="line">printf &quot;string:%s\n&quot;, *(char**)($esp+12)</span><br><span class="line">bt</span><br><span class="line">cont</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
 <h1 id="2-3-准备本机环境"><a href="#2-3-准备本机环境" class="headerlink" title="2.3. 准备本机环境"></a>2.3. 准备本机环境</h1><ul>
 <li>得保证能连上手机，adb，驱动得装好。</li>
 <li>本机环境我用的是Windows + git bash，如果你用其他环境，既然你都用了，我相信你能处理好。</li>
@@ -165,7 +165,7 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># 把端口映射打开，adb负责把本机的5039端口，映射到远端Android的5039端口</span><br><span class="line">adb forward tcp:5039 tcp:5039 </span><br><span class="line"></span><br><span class="line">#把远端Android的动态库取回本地，因为gdb只能从本地加载符号</span><br><span class="line">#注意路径前无/，不然读者可以试试，很讨厌的</span><br><span class="line">adb pull system/bin/app_process</span><br><span class="line">adb pull system/bin/linker</span><br><span class="line">adb pull system/lib/libc.so</span><br><span class="line">adb pull data/data/$PACKAGE_NAME/lib/lib*.so</span><br><span class="line"></span><br><span class="line"># gdb.setup是gdb启动的初始化脚本，省得每次gdb再敲一堆命令</span><br><span class="line"># 脚本里忽略两个中断信号，设置so符号查找路径为本目录，然后连接远程的gdbserver</span><br><span class="line">cat &gt;gdb.setup &lt;&lt;END_OF_GDB</span><br><span class="line">handle SIGPWR nostop</span><br><span class="line">handle SIGXCPU nostop</span><br><span class="line">set solib-search-path .</span><br><span class="line"></span><br><span class="line">target remote 127.0.0.1:5039</span><br><span class="line">END_OF_GDB</span><br><span class="line"></span><br><span class="line">echo &quot;install gdbserver ...&quot;</span><br><span class="line">copy $GDBSERVER_BIN .</span><br><span class="line">adb push  gdbserver  data/local/tmp/gdbserver</span><br><span class="line">adb shell chmod 777 data/local/tmp/gdbserver</span><br></pre></td></tr></table></figure>
 <h1 id="2-4-先封一些函数，方便使用"><a href="#2-4-先封一些函数，方便使用" class="headerlink" title="2.4. 先封一些函数，方便使用"></a>2.4. 先封一些函数，方便使用</h1><ul>
-<li>启动app前，上次调试环境可能还在，下面是清理的函数</li>
+<li>启动app前，上次调试环境可能还在，下面是清理的gdbserver的函数</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function kill_gdbserver()&#123;</span><br><span class="line">    GDBSERVER_PID=`adb shell &quot;ps |grep gdbserver&quot; |awk &apos;&#123;print $2;&#125;&apos;`</span><br><span class="line">    if [ &quot;$GDBSERVER_PID&quot; != &quot;&quot; ]; then</span><br><span class="line">        echo &quot;kill pre gdb server process id:$GDBSERVER_PID&quot;</span><br><span class="line">        adb shell kill -9 $GDBSERVER_PID</span><br><span class="line">    fi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
@@ -1166,15 +1166,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Android NDK gdb</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">server</a>
               </li>
              
               <li class="article-tag-list-item">
