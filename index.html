@@ -156,10 +156,10 @@
 </ul>
 <h1 id="2-调试"><a href="#2-调试" class="headerlink" title="2. 调试"></a>2. 调试</h1><p>以下脚本均为bash脚本，在git bash下执行。gdb调试android的动态库，本质和gdb远程调试Linux程序一样：远端启动gdbserver attach上要调试的应用，同时开放监听端口，然后gdb远程连上去调试。所以其涉及远端（Android）和本机两个系统。</p>
 <h1 id="2-1-准备环境变量"><a href="#2-1-准备环境变量" class="headerlink" title="2.1. 准备环境变量"></a>2.1. 准备环境变量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export PACKAGE_NAME=com.test.test</span><br><span class="line">export NDK=/d/android-ndk-r13b/</span><br><span class="line">export GDBSERVER_BIN=$NDK/prebuilt/android-x86/gdbserver/gdbserver</span><br><span class="line">export GDBC=$NDK/prebuilt/windows-x86_64/bin/gdb.exe</span><br><span class="line">export START_ACTIVITY=$PACKAGE_NAME/$PACKAGE_NAME.UnityPlayerActivity</span><br></pre></td></tr></table></figure>
-<p>就这几个，因人而异，自己改，都很简单，不多做解释了，下面的命令会用到。<br>我用的是模拟器，所以用的是x86版本的。</p>
-<h1 id="2-2-准备远端环境"><a href="#2-2-准备远端环境" class="headerlink" title="2.2. 准备远端环境"></a>2.2. 准备远端环境</h1><p>用Debug版本的动态库构建App，安装App，App本身是不是debug版本无所谓（App的这个debug版本是给java调试用的）。其实用Release版本的动态库也可以调，只是所有调试信息都没了，只能用public的符号或绝对地址下断点，想看参数得直接用栈指针，像下面这样。Ok，这么说，读者应该知道怎么灵活选择了，你想调的那个库是Debug版就行了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">b __android_log_print</span><br><span class="line">commands</span><br><span class="line">silent</span><br><span class="line">printf &quot;string:%s\n&quot;, *(char**)($esp+12)</span><br><span class="line">bt</span><br><span class="line">cont</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>就这几个，因人而异，自己改，都很简单，不多做解释了，下面的命令会用到。<br>我用的是模拟器，规避权限问题，所以用的是x86版本的。</p>
+<h1 id="2-2-准备远端环境"><a href="#2-2-准备远端环境" class="headerlink" title="2.2. 准备远端环境"></a>2.2. 准备远端环境</h1><p>用Debug版本的动态库构建App，安装App，App本身是不是debug版本无所谓（App的这个debug版本是给java调试用的，如果是在没有root的真机上，需要开App的Debug，用run-as切到app对应userid，才能attach）。其实用Release版本的动态库也可以调，只是所有调试信息都没了，只能用public的符号或绝对地址下断点，想看参数得直接用栈指针，像下面这样。Ok，这么说，读者应该知道怎么灵活选择了，你想调的那个库是Debug版就行了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">b __android_log_print</span><br><span class="line">commands</span><br><span class="line">silent</span><br><span class="line">printf &quot;string:%s\n&quot;, *(char**)($esp+12)</span><br><span class="line">bt</span><br><span class="line">cont</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
 <h1 id="2-3-准备本机环境"><a href="#2-3-准备本机环境" class="headerlink" title="2.3. 准备本机环境"></a>2.3. 准备本机环境</h1><ul>
-<li>得保证能连上手机，adb，驱动得装好。</li>
+<li>得保证能连上模拟器，有adb。</li>
 <li>本机环境我用的是Windows + git bash，如果你用其他环境，既然你都用了，我相信你能处理好。</li>
 <li>建个空目录，在里面启动git bash，执行以下脚本，而且每次App内动态库有变化，都要执行一次。</li>
 </ul>
@@ -1162,7 +1162,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+                <a href="javascript:void(0)" class="js-tag color2">server</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1170,11 +1170,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server</a>
+                <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
               </li>
              
               <li class="article-tag-list-item">
