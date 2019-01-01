@@ -17,7 +17,7 @@
 <meta property="og:description" content="1. 背景笔者出道于爱立信，电信行业，回想这么多年技术或管理上所用的技巧，思想多源于斯，深有感触。在爱立信还是有些狗屎运的，曾于项目青黄不接时独立维护一个AAAServer，熟悉了内存分配器，把该server的内存按得纹丝不动；然后又在一个全球化的网关产品中做PLM，能纵览其异步io+任务式线程组+javascript的设计。但项目中接触到的框架都是现成的，临渊羡鱼不如退而结网，自己也在开始将认识">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/thread_name.png">
-<meta property="og:updated_time" content="2019-01-01T07:10:17.438Z">
+<meta property="og:updated_time" content="2019-01-01T07:13:21.803Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="framework-nd之线程模型">
 <meta name="twitter:description" content="1. 背景笔者出道于爱立信，电信行业，回想这么多年技术或管理上所用的技巧，思想多源于斯，深有感触。在爱立信还是有些狗屎运的，曾于项目青黄不接时独立维护一个AAAServer，熟悉了内存分配器，把该server的内存按得纹丝不动；然后又在一个全球化的网关产品中做PLM，能纵览其异步io+任务式线程组+javascript的设计。但项目中接触到的框架都是现成的，临渊羡鱼不如退而结网，自己也在开始将认识">
@@ -156,7 +156,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>笔者出道于爱立信，电信行业，回想这么多年技术或管理上所用的技巧，思想多源于斯，深有感触。在爱立信还是有些狗屎运的，曾于项目青黄不接时独立维护一个AAAServer，熟悉了内存分配器，把该server的内存按得纹丝不动；然后又在一个全球化的网关产品中做PLM，能纵览其异步io+任务式线程组+javascript的设计。但项目中接触到的框架都是现成的，临渊羡鱼不如退而结网，自己也在开始将认识写成代码，即<a href="https://github.com/noodle1983/framework-nd" target="_blank" rel="noopener">framework-nd</a>。只是没有需求，怎知其可堪一用？</p>
-<p>机会还是来了，即我的第二份工作（加薪30%，如果各种福利一起算，实际只加了几百，如果不是因为这是个机会，估计留不下来，从大平台跳出来，请慎重），当时是要做信令和HTTP流量分析平台，一组人负责解析信令，我一人负责HTTP流量解析（当时https用得不多，不然就歇菜了），信令组需要记录的关键字段发给我，我将其和同时段相应的HTTP的请求/响应的关键字段汇总成一条话单，写文件，待后续分析。然后这个框架就用上了，解决了无数的问题后，在惠州移动上线了，日处理数据约1.5TB/日（我们抓了一天的包，1.5TB，内部拿这1.5T文件测试，千兆网卡带宽压到80%～90%之间，cpu和内存的相关数据时间太久就不记得）。第二次上线信令组也用了这套线程框架。</p>
+<p>机会还是来了，即我的第二份工作（加薪30%，如果各种福利一起算，实际只加了几百，如果不是因为这是个机会，估计留不下来，从大平台跳出来，请慎重），当时是要做信令和HTTP流量分析平台，一组人负责解析信令，我一人负责HTTP流量解析（当时https用得不多，不然就歇菜了），信令组需要记录的关键字段发给我，我将其和同时段相应的HTTP的请求/响应的关键字段汇总成一条话单，写文件，待后续分析。然后这个框架就用上了，解决了无数的问题后，在惠州移动上线了，日处理数据约1.5TB/日（我们用TAP设备抓了一天的包，1.5TB，内部拿这1.5T文件测试，千兆网卡带宽压到80%～90%之间，cpu和内存的相关数据时间太久就不记得）。第二次上线信令组也用了这套线程框架。</p>
 <p>后来这个框架经过适当的改造，应用于我的工具<a href="http://sourceforge.net/projects/putty-nd/" target="_blank" rel="noopener">putty-nd</a>中(zmodem和同步Google Drive的本地服务器)。</p>
 <h1 id="2-设计思路"><a href="#2-设计思路" class="headerlink" title="2. 设计思路"></a>2. 设计思路</h1><p>其实大家都知道，要使系统CPU达到最大的利用率，全局活跃线程数应等于逻辑CPU个数，这样CPU没有切换的开销，负载达到CPU个数，刚好吃饱。</p>
 <p>这是条基本规则，现实中会有些变化。</p>
@@ -422,7 +422,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -430,11 +430,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Android NDK gdb</a>
+                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+                <a href="javascript:void(0)" class="js-tag color1">Android NDK gdb</a>
               </li>
              
               <li class="article-tag-list-item">
