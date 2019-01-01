@@ -6,26 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>服务器x64升级之libunwind内存泄漏 | Noodle&#39;s blog</title>
+  <title>framework-nd之线程模型 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1. 背景关于为什么需要做x64升级的原因参见上篇。这里分享的是升级之后发生的一次诡异的内存泄漏。 2. 问题表现 刷怪之后，内存随时间明显上涨，RES大概2MB/5s，但怪物数量无变化。 诡异的是，tcmalloc总内存完全没有反映内存的增长。  3. 分析过程最初始的怀疑对象是新引入的腾讯的behaviac组件，因为刷怪之后内存涨得特别明显。经过简单地查找，发现behaviac组件确实有自己的">
-<meta name="keywords" content="server">
+  <meta name="description" content="1. 背景笔者出道于爱立信，电信行业，回想这么多年技术或管理上所用的技巧，思想多源于斯，深有感触。在爱立信还是有些狗屎运的，曾于项目青黄不接时独立维护一个AAAServer，熟悉了内存分配器，把该server的内存按得纹丝不动；然后又在一个全球化的网关产品中做PLM，能纵览其异步io+任务式线程组+javascript的设计。但项目中接触到的框架都是现成的，临渊羡鱼不如退而结网，自己也在开始将认识">
+<meta name="keywords" content="server framework">
 <meta property="og:type" content="article">
-<meta property="og:title" content="服务器x64升级之libunwind内存泄漏">
-<meta property="og:url" content="http://yoursite.com/2018/12/28/server_x64_libunwind_memory_leak/index.html">
+<meta property="og:title" content="framework-nd之线程模型">
+<meta property="og:url" content="http://yoursite.com/2019/01/01/framework-nd_thread_model/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
-<meta property="og:description" content="1. 背景关于为什么需要做x64升级的原因参见上篇。这里分享的是升级之后发生的一次诡异的内存泄漏。 2. 问题表现 刷怪之后，内存随时间明显上涨，RES大概2MB/5s，但怪物数量无变化。 诡异的是，tcmalloc总内存完全没有反映内存的增长。  3. 分析过程最初始的怀疑对象是新引入的腾讯的behaviac组件，因为刷怪之后内存涨得特别明显。经过简单地查找，发现behaviac组件确实有自己的">
+<meta property="og:description" content="1. 背景笔者出道于爱立信，电信行业，回想这么多年技术或管理上所用的技巧，思想多源于斯，深有感触。在爱立信还是有些狗屎运的，曾于项目青黄不接时独立维护一个AAAServer，熟悉了内存分配器，把该server的内存按得纹丝不动；然后又在一个全球化的网关产品中做PLM，能纵览其异步io+任务式线程组+javascript的设计。但项目中接触到的框架都是现成的，临渊羡鱼不如退而结网，自己也在开始将认识">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/mmap_bt2.png">
-<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/mmap_bt.png">
-<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue.png">
-<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue_size.png">
-<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/get_caller_stack.png">
-<meta property="og:updated_time" content="2018-12-28T13:04:12.148Z">
+<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/thread_name.png">
+<meta property="og:updated_time" content="2019-01-01T07:10:17.438Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="服务器x64升级之libunwind内存泄漏">
-<meta name="twitter:description" content="1. 背景关于为什么需要做x64升级的原因参见上篇。这里分享的是升级之后发生的一次诡异的内存泄漏。 2. 问题表现 刷怪之后，内存随时间明显上涨，RES大概2MB/5s，但怪物数量无变化。 诡异的是，tcmalloc总内存完全没有反映内存的增长。  3. 分析过程最初始的怀疑对象是新引入的腾讯的behaviac组件，因为刷怪之后内存涨得特别明显。经过简单地查找，发现behaviac组件确实有自己的">
-<meta name="twitter:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/mmap_bt2.png">
+<meta name="twitter:title" content="framework-nd之线程模型">
+<meta name="twitter:description" content="1. 背景笔者出道于爱立信，电信行业，回想这么多年技术或管理上所用的技巧，思想多源于斯，深有感触。在爱立信还是有些狗屎运的，曾于项目青黄不接时独立维护一个AAAServer，熟悉了内存分配器，把该server的内存按得纹丝不动；然后又在一个全球化的网关产品中做PLM，能纵览其异步io+任务式线程组+javascript的设计。但项目中接触到的框架都是现成的，临渊羡鱼不如退而结网，自己也在开始将认识">
+<meta name="twitter:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/thread_name.png">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
   
@@ -139,48 +135,70 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-server_x64_libunwind_memory_leak" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-framework-nd_thread_model" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      服务器x64升级之libunwind内存泄漏
+      framework-nd之线程模型
     </h1>
   
 
         
-        <a href="/2018/12/28/server_x64_libunwind_memory_leak/" class="archive-article-date">
-  	<time datetime="2018-12-28T03:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-28</time>
+        <a href="/2019/01/01/framework-nd_thread_model/" class="archive-article-date">
+  	<time datetime="2019-01-01T03:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-01</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>关于为什么需要做x64升级的原因参见<a href="https://noodle1983.github.io/2018/12/27/server_x64_luajit/" target="_blank" rel="noopener">上篇</a>。<br>这里分享的是升级之后发生的一次诡异的内存泄漏。</p>
-<h1 id="2-问题表现"><a href="#2-问题表现" class="headerlink" title="2. 问题表现"></a>2. 问题表现</h1><ul>
-<li>刷怪之后，内存随时间明显上涨，RES大概2MB/5s，但怪物数量无变化。</li>
-<li>诡异的是，tcmalloc总内存完全没有反映内存的增长。</li>
-</ul>
-<h1 id="3-分析过程"><a href="#3-分析过程" class="headerlink" title="3. 分析过程"></a>3. 分析过程</h1><p>最初始的怀疑对象是新引入的腾讯的<a href="https://www.behaviac.com/language/zh/%E9%A6%96%E9%A1%B5/" target="_blank" rel="noopener">behaviac组件</a>，因为刷怪之后内存涨得特别明显。经过简单地查找，发现behaviac组件确实有自己的内存分配器。进一步分析发现，behaviac组件只是有一层内存池的管理，它还是用系统的malloc等接口申请内存。也就是说，我们项目里behaviac组件也是通过tcmalloc分配内存，不是这个组件的问题。</p>
-<p>所以，只剩一条路，gdb下函数断点。内存申请的点多，下个函数断点打日志。当时的gdb命令没记下来，信手写一下吧，大概长得这个样子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">b malloc</span><br><span class="line">commands</span><br><span class="line">silent</span><br><span class="line">printf &quot;size:%d\n&quot;, size</span><br><span class="line">bt</span><br><span class="line">cont</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
-<p>断了几个分配的接口，发现打印的分配值和实际增长值都对不上。最后，负责副本的骏图同学(当年招到的一位特别靠谱的同事，服务器出身，新项目负责客户端渲染，水面/人物材质做得很漂亮。低调，不玩朋友圈不发博，所以没链接，面试不招是损失)把这个函数锁定在了mmap。多采样几次，看看共同点，下面是从聊天记录里挖出来的两个堆栈，前一张来自骏图，后一张我的。<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/mmap_bt2.png" alt="mmap stack"></p>
-<p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/mmap_bt.png" alt="mmap stack"></p>
-<p>堆栈大致分三个部分，由下到上分别是</p>
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>笔者出道于爱立信，电信行业，回想这么多年技术或管理上所用的技巧，思想多源于斯，深有感触。在爱立信还是有些狗屎运的，曾于项目青黄不接时独立维护一个AAAServer，熟悉了内存分配器，把该server的内存按得纹丝不动；然后又在一个全球化的网关产品中做PLM，能纵览其异步io+任务式线程组+javascript的设计。但项目中接触到的框架都是现成的，临渊羡鱼不如退而结网，自己也在开始将认识写成代码，即<a href="https://github.com/noodle1983/framework-nd" target="_blank" rel="noopener">framework-nd</a>。只是没有需求，怎知其可堪一用？</p>
+<p>机会还是来了，即我的第二份工作（加薪30%，如果各种福利一起算，实际只加了几百，如果不是因为这是个机会，估计留不下来，从大平台跳出来，请慎重），当时是要做信令和HTTP流量分析平台，一组人负责解析信令，我一人负责HTTP流量解析（当时https用得不多，不然就歇菜了），信令组需要记录的关键字段发给我，我将其和同时段相应的HTTP的请求/响应的关键字段汇总成一条话单，写文件，待后续分析。然后这个框架就用上了，解决了无数的问题后，在惠州移动上线了，日处理数据约1.5TB/日（我们抓了一天的包，1.5TB，内部拿这1.5T文件测试，千兆网卡带宽压到80%～90%之间，cpu和内存的相关数据时间太久就不记得）。第二次上线信令组也用了这套线程框架。</p>
+<p>后来这个框架经过适当的改造，应用于我的工具<a href="http://sourceforge.net/projects/putty-nd/" target="_blank" rel="noopener">putty-nd</a>中(zmodem和同步Google Drive的本地服务器)。</p>
+<h1 id="2-设计思路"><a href="#2-设计思路" class="headerlink" title="2. 设计思路"></a>2. 设计思路</h1><p>其实大家都知道，要使系统CPU达到最大的利用率，全局活跃线程数应等于逻辑CPU个数，这样CPU没有切换的开销，负载达到CPU个数，刚好吃饱。</p>
+<p>这是条基本规则，现实中会有些变化。</p>
 <ul>
-<li>我们的逻辑，析构内存，上层逻辑各有不同。</li>
-<li>tcmalloc, tcmalloc的逻辑都是free时调用libunwind记录堆栈。free的堆栈做什么用的呢？如果一个地址被free了，他不会立马回到备用池里，而是放到另外一个暂存的池子。如果地址还继续被引用，tcmalloc可以凭此打印free的堆栈。扯远了，先回来，内存分配器改天开篇聊。不过这种逻辑，debug版本才会有，编译release版本试了一下，果然就不漏了。</li>
-<li>libuwind, 取堆栈</li>
+<li>CPU个数有限，如何让有限的线程执行各种不同的任务。</li>
+<li>纯CPU计算可以让CPU忙起来，但是同步的调用，如Oracle的访问接口，或者需要同步的系统调用（日志）会让线程挂起，导致CPU释放，如果没其他活跃的线程，CPU就闲下来了。</li>
+<li>锁/同步都会让线程挂起，如何最大限度地减少这种可能性。</li>
 </ul>
-<p>Debug版本的也得解决啊，节操问题。直觉上怀疑是tcmalloc 64bit下暂存的池子太大了（上图frame 16），调试一看，按字节算的，撑死10MB<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue.png" alt="free_queue"></p>
-<p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/free_queue_size.png" alt="free_queue_size"></p>
-<p>在往上看frame 15，源码如下，MallocBlockQueueEntry传了16个指针数组给libunwind填空，和libunwind的交互不需要再分配什么内存，tcmalloc也不需要调libunwind接口释放什么东西， 所以就libunwind自己申请的得自己管理，这样子的话，就是libunwind漏了。<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/get_caller_stack.png" alt="get_caller_stack"></p>
-<p>仔细看堆栈，libunwind部分也不完全一样，一阵小郁闷，libunwind咱不熟。不过这库挺老了，用的人多，应该会有人报bug，遂Google “libunwind memory leak”。果不其然，真找着了，<a href="https://lists.nongnu.org/archive/html/libunwind-devel/2013-04/msg00000.html" target="_blank" rel="noopener">链接</a>。</p>
-<p>我们用的版本是libunwind-0.99-beta，tcmalloc推荐版，老了，和链接里的Patch代码长得不一样，照着描，core了几次之后最终版diff如下，中间过程也不表了。好吧，老实说不记得了，其实我现在看回改过的代码也挺懵B的，算了，不是研究这个的。。。好吧，我还是记得只是一些先后顺序的出了问题，但是读者不会满意的:(。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line"> src/dwarf/Gparser.c | 31 +++++++++++++++++--------------</span><br><span class="line"> 1 file changed, 17 insertions(+), 14 deletions(-)</span><br><span class="line"></span><br><span class="line">diff --git a/src/dwarf/Gparser.c b/src/dwarf/Gparser.c</span><br><span class="line">index 01a3743..594c26f 100644</span><br><span class="line">--- a/src/dwarf/Gparser.c</span><br><span class="line">+++ b/src/dwarf/Gparser.c</span><br><span class="line">@@ -383,11 +383,11 @@ fetch_proc_info (struct dwarf_cursor *c, unw_word_t ip, int need_unwind_info)</span><br><span class="line"> </span><br><span class="line">   --ip;</span><br><span class="line"> </span><br><span class="line">+  memset (&amp;c-&gt;pi, 0, sizeof (c-&gt;pi));</span><br><span class="line">+</span><br><span class="line">   if (c-&gt;pi_valid &amp;&amp; !need_unwind_info)</span><br><span class="line">     return 0;</span><br><span class="line"> </span><br><span class="line">-  memset (&amp;c-&gt;pi, 0, sizeof (c-&gt;pi));</span><br><span class="line">-</span><br><span class="line">   /* check dynamic info first --- it overrides everything else */</span><br><span class="line">   ret = unwi_find_dynamic_proc_info (c-&gt;as, ip, &amp;c-&gt;pi, need_unwind_info,</span><br><span class="line"> 				     c-&gt;as_arg);</span><br><span class="line">@@ -417,9 +417,10 @@ parse_dynamic (struct dwarf_cursor *c, unw_word_t ip, dwarf_state_record_t *sr)</span><br><span class="line"> static inline void</span><br><span class="line"> put_unwind_info (struct dwarf_cursor *c, unw_proc_info_t *pi)</span><br><span class="line"> &#123;</span><br><span class="line">-  if (!c-&gt;pi_valid)</span><br><span class="line">-    return;</span><br><span class="line">-</span><br><span class="line">+//https://lists.nongnu.org/archive/html/libunwind-devel/2013-04/msg00000.html</span><br><span class="line">+//  if (!c-&gt;pi_valid)</span><br><span class="line">+//    return;</span><br><span class="line">+//</span><br><span class="line">   if (c-&gt;pi_is_dynamic)</span><br><span class="line">     unwi_put_dynamic_unwind_info (c-&gt;as, pi, c-&gt;as_arg);</span><br><span class="line">   else if (pi-&gt;unwind_info);</span><br><span class="line">@@ -782,19 +783,20 @@ static int</span><br><span class="line"> uncached_dwarf_find_save_locs (struct dwarf_cursor *c)</span><br><span class="line"> &#123;</span><br><span class="line">   dwarf_state_record_t sr;</span><br><span class="line">-  int ret;</span><br><span class="line">+  int ret = 0;</span><br><span class="line"> </span><br><span class="line">   if ((ret = fetch_proc_info (c, c-&gt;ip, 1)) &lt; 0)</span><br><span class="line">-    return ret;</span><br><span class="line">+    goto out;</span><br><span class="line"> </span><br><span class="line">   if ((ret = create_state_record_for (c, &amp;sr, c-&gt;ip)) &lt; 0)</span><br><span class="line">-    return ret;</span><br><span class="line">+    goto out;</span><br><span class="line"> </span><br><span class="line">   if ((ret = apply_reg_state (c, &amp;sr.rs_current)) &lt; 0)</span><br><span class="line">-    return ret;</span><br><span class="line">+    goto out;</span><br><span class="line"> </span><br><span class="line">+out:</span><br><span class="line">   put_unwind_info (c, &amp;c-&gt;pi);</span><br><span class="line">-  return 0;</span><br><span class="line">+  return ret &lt; 0 ? ret : 0;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> /* The function finds the saved locations and applies the register</span><br><span class="line">@@ -845,10 +847,10 @@ dwarf_find_save_locs (struct dwarf_cursor *c)</span><br><span class="line">   c-&gt;hint = rs-&gt;hint;</span><br><span class="line">   c-&gt;prev_rs = rs - cache-&gt;buckets;</span><br><span class="line"> </span><br><span class="line">+out:</span><br><span class="line">   put_unwind_info (c, &amp;c-&gt;pi);</span><br><span class="line">-  ret = apply_reg_state (c, rs);</span><br><span class="line">+  if(ret &gt;= 0) &#123; ret = apply_reg_state (c, rs); &#125;</span><br><span class="line"> </span><br><span class="line">-out:</span><br><span class="line">   put_rs_cache (c-&gt;as, cache, &amp;saved_mask);</span><br><span class="line">   return ret;</span><br><span class="line"> </span><br><span class="line">@@ -876,6 +878,7 @@ dwarf_make_proc_info (struct dwarf_cursor *c)</span><br><span class="line">       || get_cached_proc_info (c) &lt; 0)</span><br><span class="line"> #endif</span><br><span class="line">     /* Lookup it up the slow way... */</span><br><span class="line">-    return fetch_proc_info (c, c-&gt;ip, 0);</span><br><span class="line">-  return 0;</span><br><span class="line">+  int ret = fetch_proc_info (c, c-&gt;ip, 0);</span><br><span class="line">+  put_unwind_info (c, &amp;c-&gt;pi);</span><br><span class="line">+  return ret;</span><br><span class="line"> &#125;</span><br><span class="line">--</span><br></pre></td></tr></table></figure>
-<h1 id="4-后记"><a href="#4-后记" class="headerlink" title="4. 后记"></a>4. 后记</h1><p>总结一下，这问题刚开始认为是刷怪的问题，其实是刷怪了之后，内存分配释放比较频繁，把问题暴露了出来，让副本的同学背了会儿锅。<br>然后，这个逻辑是debug版才有，怪不得x86和x64做机器人压测比较的时候，也没发现。</p>
+<p>结合之前的经验，做了下面的设计。</p>
+<ul>
+<li>针对第一个问题，用命令模式，将不同的处理函数和数据用boost::bind封装成boost::function<void (*)()="">，提交各自线程的处理队列，线程仅需处理这个队列。这样一个线程即可以进行多任务处理。</void></li>
+<li>第二个问题，线程分组。纯CPU计算的任务和会让CPU挂起的任务分属不同的组（按需求可以再细分），组内线程地位平等，数量可调。提交处理任务是向线程组提交，提交接口包含一session_id，线程组按此session_id分配到线程处理（取余），这样线程组可以保证同一id的任务会按顺序先后在同一线程处理。</li>
+<li>第三个问题，创造单线程环境。按逻辑，需要先后处理的各个任务可由逻辑层归为一个session，并分配id，同一session_id的任务按session_id像线程组提交，线程组保证这个会话的任务在同一线程先后处理。会话可能有多个在多个线程触发事件源，但其向线程组提交后在线程的任务队列中串行化，其处理任务不用加锁。</li>
+<li>对队列加锁，尽量不对一大块逻辑操作加锁。如任务队列需要加锁，session的自增id需要加锁。存储session的集合可以定义和处理线程数内相同的个数，在线程启动前初始化好，分别访问避免加锁。也可以用Thread Local Storage，但这种设计有点侵入性，笔者未采用。</li>
+</ul>
+<p>在调试中发现session的任务可能会在错误的线程处理，因此加入了一些防错的校验。</p>
+<p>在后来的调优中，发现如果各个线程共享系统的定时器队列，输入在100Mbit/s时达到处理的瓶颈。因为会话需要同步各个输入，用到了大量的定时器，因此改在线程上用最小堆实现了会话的定时器管理。因为同一会话的处理都在同一线程，避免了定时器任务的加锁，顺利跨过这个坎，使输入达到网卡带宽的80%～90%时，仍能稳定处理。</p>
+<p>实践发现的一些冗余的设计：对队列设计了池子，但对tcmalloc这种现代分配器，对比发现完全看不出有任何优化。也就是说，无初始化负担仅是内存池子的设计，可以完全交给内存分配器。</p>
+<h1 id="3-实现"><a href="#3-实现" class="headerlink" title="3. 实现"></a>3. 实现</h1><p>有设计的蓝图，实现就不难了，<a href="https://github.com/noodle1983/framework-nd/tree/pthread/Processor" target="_blank" rel="noopener">链接</a>。</p>
+<p>主要有两个类，Boost的版本，实现还有Pthread的版本，不知道丢哪去了，简单改几个东西， 不麻烦。</p>
+<ul>
+<li>BoostProcessor，线程组，组内线程接口不对外开放，只能用一带session id的接口向线程组提交任务。</li>
+<li>BoostWorker，线程的处理函数，处理任务队列和定时器队列。</li>
+<li>ProcessorSensor，监控线程任务队列数量，如果处理不过来，任务数量会堆积，内存就上去了。</li>
+</ul>
+<h1 id="3-1-外部接口"><a href="#3-1-外部接口" class="headerlink" title="3.1 外部接口"></a>3.1 外部接口</h1><p>对外提供的接口有三类。</p>
+<ul>
+<li>BoostProcessor（线程组）构造函数和析构函数</li>
+<li>线程启停</li>
+<li>提交任务和Timer</li>
+</ul>
+<h1 id="3-1-1-BoostProcessor构造函数和析构函数。"><a href="#3-1-1-BoostProcessor构造函数和析构函数。" class="headerlink" title="3.1.1. BoostProcessor构造函数和析构函数。"></a>3.1.1. BoostProcessor构造函数和析构函数。</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BoostProcessor(const unsigned theThreadCount);</span><br><span class="line">BoostProcessor(const std::string&amp; theName, const unsigned theThreadCount);</span><br><span class="line">~BoostProcessor();</span><br></pre></td></tr></table></figure>
+<p>构造函数除了数量，还有一个带名字的。方便知道是哪组线程发生了堆积。<strong>其实建议用<a href="http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html" target="_blank" rel="noopener">pthread_setname_np</a>为每个线程都设个名字</strong>，这样用Top命令就能看到各个线程的cpu负载情况。<br><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/thread_name.png" alt=""></p>
+<h1 id="3-1-2-start-stop线程"><a href="#3-1-2-start-stop线程" class="headerlink" title="3.1.2. start/stop线程"></a>3.1.2. start/stop线程</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void start();</span><br><span class="line">void waitStop();</span><br><span class="line">void stop();</span><br></pre></td></tr></table></figure>
+<h1 id="3-1-3-提交任务和Timer"><a href="#3-1-3-提交任务和Timer" class="headerlink" title="3.1.3. 提交任务和Timer"></a>3.1.3. 提交任务和Timer</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">struct event* addLocalTimer(</span><br><span class="line">                const unsigned long long theId, </span><br><span class="line">				const struct timeval&amp; theInterval, </span><br><span class="line">				event_callback_fn theCallback,</span><br><span class="line">				void* theArg);</span><br><span class="line">inline void cancelLocalTimer(</span><br><span class="line">        const unsigned long long theId, </span><br><span class="line">        struct event*&amp; theEvent);</span><br><span class="line"></span><br><span class="line">int process(</span><br><span class="line">        const unsigned long long theId, </span><br><span class="line">        void (*theFunc)());;</span><br></pre></td></tr></table></figure>
+<p>Timer放在线程上的原因说过了。<br>看了一下，最新代码的任务还是带了池子的版本，用了大量的模板，导致执行文件过大，性能上没提升，这是一个不太成功的实践。直接用boost::function简化就行了。</p>
+<h1 id="3-2-线程的实现"><a href="#3-2-线程的实现" class="headerlink" title="3.2. 线程的实现"></a>3.2. 线程的实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">void BoostWorker::run()</span><br><span class="line">&#123;</span><br><span class="line">    initThreadAttr();</span><br><span class="line">    IJob* job;</span><br><span class="line">    while (!isToStopM)</span><br><span class="line">    &#123;</span><br><span class="line">        //handle Job</span><br><span class="line">        if (0 &lt; bufferJobQueueM.getn((char*)&amp;job, sizeof(IJob*)))</span><br><span class="line">        &#123;</span><br><span class="line">            (*job)();</span><br><span class="line">            job-&gt;returnToPool();</span><br><span class="line">            job = NULL;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //handle timer</span><br><span class="line">        handleLocalTimer();</span><br><span class="line"></span><br><span class="line">		if (!bufferJobQueueM.empty())</span><br><span class="line">		&#123;</span><br><span class="line">			continue;</span><br><span class="line">		&#125;</span><br><span class="line">        else if (!isToStopM &amp;&amp; bufferJobQueueM.empty() &amp;&amp; !min_heap_empty(&amp;timerHeapM))</span><br><span class="line">        &#123;</span><br><span class="line">            boost::unique_lock&lt;boost::mutex&gt; queueLock(queueMutexM);</span><br><span class="line">            queueCondM.timed_wait(queueLock, </span><br><span class="line">                    boost::posix_time::from_time_t(timeNowM.tv_sec) </span><br><span class="line">                        + boost::posix_time::microseconds(timeNowM.tv_usec + 500));</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            boost::unique_lock&lt;boost::mutex&gt; queueLock(queueMutexM);</span><br><span class="line">            while (!isToStopM &amp;&amp; bufferJobQueueM.empty() &amp;&amp; min_heap_empty(&amp;timerHeapM))</span><br><span class="line">            &#123;</span><br><span class="line">                queueCondM.wait(queueLock); </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>bufferJobQueueM是读写分离的一个数据结构，因为读取只有一个线程，所以没有锁（改天开篇讲）。</p>
+<p>定时器队列用的是libevent的最小堆，小巧，提供了删除的接口。</p>
+<p>处理完任务后，如果还有任务要处理，则继续处理，如果还有定时时间，time_wait 500微秒（0.5ms，定时器精度就是这个了），否则直接wait。只要有wait，CPU就被释放了，要么timeout切回来，要么新任务有signal唤醒。有人说线程的切换至少要耗时10ms，笔者有印象这应该是出自某本经典的书，说内核的时间片算法最小单位大约10ms。后来再查了一下，这时间片算法单位应该是和频率有关，10ms应该是书作者写书时的数据，算算下应该是上世纪的事情了。</p>
+<p>其他就不贴了。代码都在<a href="https://github.com/noodle1983/framework-nd/tree/pthread/Processor" target="_blank" rel="noopener">github</a>上。</p>
+<h1 id="4-后记"><a href="#4-后记" class="headerlink" title="4. 后记"></a>4. 后记</h1><p>在游戏行业的时候，因为帧循环是单线程处理的，曾有想法引入线程组，按场景id分线程去处理。当时最大的问题是32bit程序内存受限，n个线程n个lua vm，配置表得n份，太占内存。因为够用，程序人少事多，晃着晃着就过去了。</p>
 
       
 
@@ -194,7 +212,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">server</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">server framework</a>
         		</li>
       		
 		</ul>
@@ -250,7 +268,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/28/server_x64_libunwind_memory_leak/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/01/01/framework-nd_thread_model/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -264,18 +282,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/29/gdb_Android_solib/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          gdb调试Android动态库脚本
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/12/27/server_x64_luajit/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">服务器x64升级之luajit gc64</div>
+    <a href="/2018/12/29/gdb_Android_solib/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">gdb调试Android动态库脚本</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -314,7 +323,7 @@
 <script src="https://jjeejj.github.io/js/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-  id: "Fri Dec 28 2018 11:32:10 GMT+0800",
+  id: "Tue Jan 01 2019 11:32:10 GMT+0800",
   owner: 'noodle1983',
   repo: 'gitment-comments',
   oauth: {
