@@ -6,15 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: server framework | Noodle&#39;s blog</title>
+  <title>framework-nd之网络模型 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Noodle&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/tags/server-framework/index.html">
+  <meta name="description" content="1. 背景框架背景见上篇。 网络框架的设计参考了python的异步框架twisted。 笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就">
+<meta name="keywords" content="server framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="framework-nd之网络模型">
+<meta property="og:url" content="http://yoursite.com/2019/01/01/framework-nd_network_model/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
+<meta property="og:description" content="1. 背景框架背景见上篇。 网络框架的设计参考了python的异步框架twisted。 笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/framework-nd_net.png">
+<meta property="og:updated_time" content="2019-01-01T15:54:33.219Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Noodle&#39;s blog">
+<meta name="twitter:title" content="framework-nd之网络模型">
+<meta name="twitter:description" content="1. 背景框架背景见上篇。 网络框架的设计参考了python的异步框架twisted。 笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就">
+<meta name="twitter:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/framework-nd_net.png">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
   
@@ -128,36 +135,52 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-framework-nd_network_model" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      framework-nd之网络模型
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/01/01/framework-nd_network_model/" class="archive-article-date">
+
+        
+        <a href="/2019/01/01/framework-nd_network_model/" class="archive-article-date">
   	<time datetime="2019-01-01T13:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-01</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/01/01/framework-nd_network_model/">framework-nd之网络模型</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>框架背景见<a href="https://noodle1983.github.io/2019/01/01/framework-nd_thread_model/" target="_blank" rel="noopener">上篇</a>。</p>
+<p>网络框架的设计参考了python的异步框架<a href="https://twistedmatrix.com/trac/" target="_blank" rel="noopener">twisted</a>。</p>
+<p>笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就看着内存一直在涨，5分钟已挂…您没听错，就是5分钟一挂，提单的严重级别是中级，要放国内早爆了…除了升级扩容别无他法。当时就感叹，异步没有压不爆的机器。</p>
+<p>鉴于此，笔者当时看了挺多异步的设计，twisted是印象最深的一个。接着用python写一个自己的python测试框架<a href="https://github.com/noodle1983/pythontest" target="_blank" rel="noopener">pythontest</a>, 但一直都没拍上用场。framework-nd的网络模型其实就是pythontest的c++版。但笔者的python仅限于东拼西凑，答不出所以然。</p>
+<h1 id="2-设计"><a href="#2-设计" class="headerlink" title="2. 设计"></a>2. 设计</h1><p>写网络框架的人，应该都看过《unix网络编程》，也知道平台差异性。笔者选用libevent1（2的设计比较复杂，没用）去封装平台差异，socket的读写按边缘触发处理。</p>
+<p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/framework-nd_net.png" alt="class_model"></p>
+<ul>
+<li>Reactor 独占一线程，跑event_base_dispatch。提供接口，监听socket的事件。</li>
+<li>TcpServer 新建监听端口，将新连接和上层处理逻辑处理初始化成SocketConnection。</li>
+<li>SocketConnection 维护已连接的socket，负责异步读写socket，读写各维护一队列。并将网络事件上报给Protocol。</li>
+<li>IProtocol 负责TcpServer的配置和处理网络事件。其主要从网络流（SocketConnection的读缓存）中解析出消息体，或将消息体写入SocketConnection的写缓存。</li>
+<li>TcpClient负责connect之前的逻辑，connect之后生成SocketConnection，逻辑交由SocketConnection维护，连接断开后负责重连。TcpClient设想支持多个连接，但是没有这样的需求就没实现。<br>以上类除了Reactor，其他类初始化参数均包含一线程组引用，按调试需要，可以用不同的线程组初始化，也可以用相同的线程组初始化。通知事件跑在原线程，事件的处理跑在线程组socket fd对应线程。</li>
+</ul>
+<p>恩， 好像完了？大的部分好像真的完了，但是细节都在代码里。例如做了流控，即接收缓存在高水位，则不再从socket读取，滑动窗口协议会导致客户端不再发送，知道接收队列被处理至正常水平，防止服务器被输入压垮了。</p>
+<p>另外，这玩意还是很考验多线程调试技巧的。</p>
+<h1 id="3-举个例子吧"><a href="#3-举个例子吧" class="headerlink" title="3. 举个例子吧"></a>3. 举个例子吧</h1><p>EchoServer是这么启的，telnetServer是管理端口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Processor::BoostProcessor processor(&quot;NetProcessor&quot;, 4);</span><br><span class="line">processor.start();</span><br><span class="line">Net::Reactor::Reactor reactor;</span><br><span class="line">Net::Protocol::EchoProtocol echoProtocol(&amp;reactor, &amp;processor);</span><br><span class="line">Net::Protocol::TelnetProtocol telnetProtocol(Processor::BoostProcessor::manInstance());</span><br><span class="line">Net::Server::TcpServer server(&amp;echoProtocol, &amp;reactor, &amp;processor);</span><br><span class="line">Net::Server::TcpServer telnetServer(&amp;telnetProtocol, &amp;reactor, &amp;processor);</span><br><span class="line">server.start();</span><br><span class="line">telnetServer.start();</span><br><span class="line">reactor.start();</span><br><span class="line"></span><br><span class="line">boost::unique_lock&lt;boost::mutex&gt; lock(closedMutexM);</span><br><span class="line">while(!closed)</span><br><span class="line">&#123;</span><br><span class="line">    closedCondM.wait(lock);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">processor.stop();</span><br><span class="line">reactor.stop();</span><br><span class="line">LOG_DEBUG(&quot;EchoServer stopped.&quot;);</span><br></pre></td></tr></table></figure>
+<h1 id="4-后记"><a href="#4-后记" class="headerlink" title="4. 后记"></a>4. 后记</h1><p><a href="https://sourceforge.net/projects/putty-nd/" target="_blank" rel="noopener">putty-nd</a>同步session数据到Google Drive，需要启一HttpServer配合Google账号的验证，对这套框架略有修改。加力之后代码段增加得不多，还是很小巧的。</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -169,57 +192,122 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/01/01/framework-nd_network_model/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/01/01/framework-nd_thread_model/" class="archive-article-date">
-  	<time datetime="2019-01-01T03:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-01</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/01/01/framework-nd_thread_model/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">framework-nd之线程模型</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/01/01/framework-nd_thread_model/">framework-nd之线程模型</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">server framework</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
+  <div id="gitment-ctn"></div> 
+<link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
+<script src="https://jjeejj.github.io/js/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+  id: "Tue Jan 01 2019 21:32:10 GMT+0800",
+  owner: 'noodle1983',
+  repo: 'gitment-comments',
+  oauth: {
+    client_id: '972f3c4a589c8d3ecc20',
+    client_secret: '2992fa2ea0fa071faafd9e65e585051f08df0a86',
+  },
+})
+gitment.render('gitment-ctn')
+</script>
+  
 
 
           </div>
@@ -242,9 +330,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
