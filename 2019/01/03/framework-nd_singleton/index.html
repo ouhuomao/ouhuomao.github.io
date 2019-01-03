@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>framework-nd之singleton模板 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1. 实现Singleton.hpp 123456789101112131415161718192021222324252627282930template&amp;lt;typename DataType, int instanceId = 0&amp;gt;class Singleton &amp;#123;public:     static DataType* instance()    &amp;#123;">
+  <meta name="description" content="1. 实现无侵入设计，把任意类变成singleton： Singleton.hpp 123456789101112131415161718192021222324252627282930template&amp;lt;typename DataType, int instanceId = 0&amp;gt;class Singleton &amp;#123;public:     static DataType* ins">
 <meta name="keywords" content="server framework">
 <meta property="og:type" content="article">
 <meta property="og:title" content="framework-nd之singleton模板">
 <meta property="og:url" content="http://yoursite.com/2019/01/03/framework-nd_singleton/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
-<meta property="og:description" content="1. 实现Singleton.hpp 123456789101112131415161718192021222324252627282930template&amp;lt;typename DataType, int instanceId = 0&amp;gt;class Singleton &amp;#123;public:     static DataType* instance()    &amp;#123;">
+<meta property="og:description" content="1. 实现无侵入设计，把任意类变成singleton： Singleton.hpp 123456789101112131415161718192021222324252627282930template&amp;lt;typename DataType, int instanceId = 0&amp;gt;class Singleton &amp;#123;public:     static DataType* ins">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-03T03:01:19.044Z">
+<meta property="og:updated_time" content="2019-01-03T03:03:40.223Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="framework-nd之singleton模板">
-<meta name="twitter:description" content="1. 实现Singleton.hpp 123456789101112131415161718192021222324252627282930template&amp;lt;typename DataType, int instanceId = 0&amp;gt;class Singleton &amp;#123;public:     static DataType* instance()    &amp;#123;">
+<meta name="twitter:description" content="1. 实现无侵入设计，把任意类变成singleton： Singleton.hpp 123456789101112131415161718192021222324252627282930template&amp;lt;typename DataType, int instanceId = 0&amp;gt;class Singleton &amp;#123;public:     static DataType* ins">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
   
@@ -153,7 +153,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="1-实现"><a href="#1-实现" class="headerlink" title="1. 实现"></a>1. 实现</h1><p><a href="https://github.com/noodle1983/framework-nd/blob/master/DesignPattern/include/Singleton.hpp" target="_blank" rel="noopener">Singleton.hpp</a></p>
+        <h1 id="1-实现"><a href="#1-实现" class="headerlink" title="1. 实现"></a>1. 实现</h1><p>无侵入设计，把任意类变成singleton：</p>
+<p><a href="https://github.com/noodle1983/framework-nd/blob/master/DesignPattern/include/Singleton.hpp" target="_blank" rel="noopener">Singleton.hpp</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename DataType, int instanceId = 0&gt;</span><br><span class="line">class Singleton </span><br><span class="line">&#123;</span><br><span class="line">public: </span><br><span class="line">    static DataType* instance()</span><br><span class="line">    &#123;</span><br><span class="line">        if (NULL == dataHolderM.get())</span><br><span class="line">        &#123;</span><br><span class="line">            boost::lock_guard&lt;boost::mutex&gt; lock(dbLockMutexM);</span><br><span class="line">            if (NULL == dataHolderM.get())</span><br><span class="line">            &#123;</span><br><span class="line">                dataHolderM.reset(new DataType);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return dataHolderM.get();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">private:</span><br><span class="line">    Singleton()&#123;&#125;;</span><br><span class="line">    ~Singleton()&#123;&#125;;</span><br><span class="line"></span><br><span class="line">    static std::auto_ptr&lt;DataType&gt; dataHolderM;</span><br><span class="line">    static boost::mutex dbLockMutexM;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">template&lt;typename DataType, int instanceId&gt;</span><br><span class="line">std::auto_ptr&lt;DataType&gt; Singleton&lt;DataType, instanceId&gt;::dataHolderM;</span><br><span class="line"></span><br><span class="line">template&lt;typename DataType, int instanceId&gt;</span><br><span class="line">boost::mutex Singleton&lt;DataType, instanceId&gt;::dbLockMutexM;</span><br></pre></td></tr></table></figure>
 <p>因为是模板，static变量的定义可放头文件，c++编译器对每个实体类的static变量仅定义一次。</p>
 <p>如果需要多个实例，可以为instanceId赋不同的值（如下），否则忽略。</p>
