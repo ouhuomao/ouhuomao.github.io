@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018/4 | Noodle&#39;s blog</title>
+  <title>framework之项目环境变量和别名 | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Noodle&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/04/index.html">
+  <meta name="description" content="1. 背景为项目定义环境变量和别名，是个很好的实践：提高效率，屏蔽复杂的命令，降低策划使用自己的一套服务器环境的门槛。 2. 命令我们的项目环境变量和别名存在名为alias_cmd的文件中，置于项目目录下，操作项目前需要source或“. ”导入变量或别名定义。目前的命令主要有下面几类。 2.1. 检查别名文件的打开方式别名文件需要source或“. ”导入变量或别名定义，直接“./”执行会报错，">
+<meta name="keywords" content="server framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="framework之项目环境变量和别名">
+<meta property="og:url" content="http://yoursite.com/2019/01/04/framework_alias/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
+<meta property="og:description" content="1. 背景为项目定义环境变量和别名，是个很好的实践：提高效率，屏蔽复杂的命令，降低策划使用自己的一套服务器环境的门槛。 2. 命令我们的项目环境变量和别名存在名为alias_cmd的文件中，置于项目目录下，操作项目前需要source或“. ”导入变量或别名定义。目前的命令主要有下面几类。 2.1. 检查别名文件的打开方式别名文件需要source或“. ”导入变量或别名定义，直接“./”执行会报错，">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-04T14:18:37.846Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Noodle&#39;s blog">
+<meta name="twitter:title" content="framework之项目环境变量和别名">
+<meta name="twitter:description" content="1. 背景为项目定义环境变量和别名，是个很好的实践：提高效率，屏蔽复杂的命令，降低策划使用自己的一套服务器环境的门槛。 2. 命令我们的项目环境变量和别名存在名为alias_cmd的文件中，置于项目目录下，操作项目前需要source或“. ”导入变量或别名定义。目前的命令主要有下面几类。 2.1. 检查别名文件的打开方式别名文件需要source或“. ”导入变量或别名定义，直接“./”执行会报错，">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
   
@@ -128,49 +133,173 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-framework_alias" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/04/17/AboutMe/" class="archive-article-date">
-  	<time datetime="2018-04-17T11:32:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-17</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/04/17/AboutMe/">Who am I</a>
+    <h1 class="article-title" itemprop="name">
+      framework之项目环境变量和别名
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+        
+        <a href="/2019/01/04/framework_alias/" class="archive-article-date">
+  	<time datetime="2019-01-04T14:18:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>为项目定义环境变量和别名，是个很好的实践：提高效率，屏蔽复杂的命令，降低策划使用自己的一套服务器环境的门槛。</p>
+<h1 id="2-命令"><a href="#2-命令" class="headerlink" title="2. 命令"></a>2. 命令</h1><p>我们的项目环境变量和别名存在名为alias_cmd的文件中，置于项目目录下，操作项目前需要source或“. ”导入变量或别名定义。目前的命令主要有下面几类。</p>
+<h1 id="2-1-检查别名文件的打开方式"><a href="#2-1-检查别名文件的打开方式" class="headerlink" title="2.1. 检查别名文件的打开方式"></a>2.1. 检查别名文件的打开方式</h1><p>别名文件需要source或“. ”导入变量或别名定义，直接“./”执行会报错，防止被错误执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">SELF_NAME=&quot;$&#123;BASH_ARGV[0]&#125;&quot;</span><br><span class="line">if [ &quot;$SELF_NAME&quot; == &quot;&quot; ]; then</span><br><span class="line">    SELF_PATH=$0</span><br><span class="line">    if [ $&#123;SELF_PATH:0:1&#125; != &quot;/&quot; ]; then </span><br><span class="line">        SELF_PATH=&quot;$PWD/$SELF_PATH&quot;</span><br><span class="line">    fi</span><br><span class="line">    cat &lt;&lt;END_OF_USAGE</span><br><span class="line">usage:</span><br><span class="line">    敲 &quot;. $SELF_PATH&quot; 回车</span><br><span class="line">    或者加入bashrc：echo &quot;. $SELF_PATH&quot; &gt;&gt; ~/.bashrc</span><br><span class="line">    一些命令会改变目录，用命令&quot;cd -&quot;切回    </span><br><span class="line">    gdbxx 已经设置好参数，可以直接r</span><br><span class="line">END_OF_USAGE</span><br><span class="line">    exit -1</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<h1 id="2-2-grep进程"><a href="#2-2-grep进程" class="headerlink" title="2.2. grep进程"></a>2.2. grep进程</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">USER=`whoami`</span><br><span class="line">USER_ID=`id -u`</span><br><span class="line">alias psmy=&quot;ps -ef | egrep \&quot;^($USER|$USER_ID)\&quot; | grep &quot;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h1 id="2-3-cd到各种目录"><a href="#2-3-cd到各种目录" class="headerlink" title="2.3. cd到各种目录"></a>2.3. cd到各种目录</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alias cdr=&quot;cd $PROJ_BASE&quot;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h1 id="2-4-启停服务"><a href="#2-4-启停服务" class="headerlink" title="2.4. 启停服务"></a>2.4. 启停服务</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alias startgs=&quot;echo -ne \&quot;\\e]2;game_server\\a\&quot;;cd $PROJ_BASE/server/gameserver/UnitTest;./gameservergame_app -c gameserver.lua&quot;</span><br><span class="line">alias stopgs=&quot;psmy gameservergame_ap[p] |awk &apos;&#123;print \$2;&#125;&apos; |xargs -n 1 -i kill -10 &#123;&#125;&quot;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h1 id="2-5-profile"><a href="#2-5-profile" class="headerlink" title="2.5. profile"></a>2.5. profile</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alias profgs=&quot;cd $PROJ_BASE/server/gameserver/UnitTest;env CPUPROFILE=./gameservergame_app.prof ./gameservergame_app -c gameserver.lua&quot;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h1 id="2-2-带参数启动的gdb命令"><a href="#2-2-带参数启动的gdb命令" class="headerlink" title="2.2. 带参数启动的gdb命令"></a>2.2. 带参数启动的gdb命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias gdbgs=&quot;cd $PROJ_BASE/server/gameserver/UnitTest;gdb --args ./gameservergame_app -c gameserver.lua&quot;</span><br></pre></td></tr></table></figure>
+<h1 id="2-3-gdb-attach命令"><a href="#2-3-gdb-attach命令" class="headerlink" title="2.3. gdb attach命令"></a>2.3. gdb attach命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias agdbgs=&quot;export a=\`psmy gameservergame_ap[p] |awk &apos;&#123;print \$2;&#125;&apos; \`; gdb -p \$a;&quot;</span><br></pre></td></tr></table></figure>
+<h1 id="3-注意"><a href="#3-注意" class="headerlink" title="3. 注意"></a>3. 注意</h1><p>别名文件跟随分支，不用分支的别名文件直接改，交由版本工具管理，不要弄多份，不然会混淆。</p>
+<p>一个ssh终端对应一个项目分支，不然也容易混淆（可以通过命令改终端名字）。</p>
 
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">server framework</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/01/04/framework_alias/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2019/01/04/framework-nd_Makefile/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">framework-nd之强迫症的Makefile</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
+  <div id="gitment-ctn"></div> 
+<link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
+<script src="https://jjeejj.github.io/js/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+  id: "Fri Jan 04 2019 22:18:10 GMT+0800",
+  owner: 'noodle1983',
+  repo: 'gitment-comments',
+  oauth: {
+    client_id: '972f3c4a589c8d3ecc20',
+    client_secret: '2992fa2ea0fa071faafd9e65e585051f08df0a86',
+  },
+})
+gitment.render('gitment-ctn')
+</script>
+  
 
 
           </div>
@@ -193,8 +322,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
