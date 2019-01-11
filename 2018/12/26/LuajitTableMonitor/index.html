@@ -6,19 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏） | Noodle&#39;s blog</title>
+  <title>luajit表数监控（忆一次项目上线中遇到的luajit对象内存泄漏） | Noodle&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1. 背景我们项目为ARPG手游（也没啥见不得人的，就叫暗黑血统手游，后期不少坑钱活动的实现出自我手，轻拍。。。）。我们的服务器框架设计源于某大厂，c/c++和luajit的实现，这次要说的是项目上线时（2014年11月左右）的一次luajit对象内存泄漏（废弃的数据没删，我们都叫泄漏）和由此产生的luajit的表记录监控工具。 2. 问题表现内存增长，速率大概为200～300MB/天。 我们日志">
 <meta name="keywords" content="server">
 <meta property="og:type" content="article">
-<meta property="og:title" content="luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）">
+<meta property="og:title" content="luajit表数监控（忆一次项目上线中遇到的luajit对象内存泄漏）">
 <meta property="og:url" content="http://yoursite.com/2018/12/26/LuajitTableMonitor/index.html">
 <meta property="og:site_name" content="Noodle&#39;s blog">
 <meta property="og:description" content="1. 背景我们项目为ARPG手游（也没啥见不得人的，就叫暗黑血统手游，后期不少坑钱活动的实现出自我手，轻拍。。。）。我们的服务器框架设计源于某大厂，c/c++和luajit的实现，这次要说的是项目上线时（2014年11月左右）的一次luajit对象内存泄漏（废弃的数据没删，我们都叫泄漏）和由此产生的luajit的表记录监控工具。 2. 问题表现内存增长，速率大概为200～300MB/天。 我们日志">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-28T13:39:10.303Z">
+<meta property="og:updated_time" content="2019-01-11T03:55:32.109Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）">
+<meta name="twitter:title" content="luajit表数监控（忆一次项目上线中遇到的luajit对象内存泄漏）">
 <meta name="twitter:description" content="1. 背景我们项目为ARPG手游（也没啥见不得人的，就叫暗黑血统手游，后期不少坑钱活动的实现出自我手，轻拍。。。）。我们的服务器框架设计源于某大厂，c/c++和luajit的实现，这次要说的是项目上线时（2014年11月左右）的一次luajit对象内存泄漏（废弃的数据没删，我们都叫泄漏）和由此产生的luajit的表记录监控工具。 2. 问题表现内存增长，速率大概为200～300MB/天。 我们日志">
   
     <link rel="alternative" href="/atom.xml" title="Noodle&#39;s blog" type="application/atom+xml">
@@ -140,7 +140,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      luajit表记录监控（忆一次项目上线中遇到的luajit对象内存泄漏）
+      luajit表数监控（忆一次项目上线中遇到的luajit对象内存泄漏）
     </h1>
   
 
@@ -413,7 +413,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+                <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -421,11 +425,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
