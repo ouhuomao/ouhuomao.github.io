@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/FiFoBuffer_rw.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/FiFoBuffer_w.png">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/FiFoBuffer_wl.png">
-<meta property="og:updated_time" content="2019-01-02T15:07:52.274Z">
+<meta property="og:updated_time" content="2019-01-11T08:11:00.437Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="framework-nd之读写线程隔离的FIFO队列">
 <meta name="twitter:description" content="1. 设计1.1. 想法设计框架(背景见链接)的时候，经常会碰到生产者消费者模型，当时就想整型以机器字长对齐，其赋值和读取都是原子的。举个例子  12size_t i = 0; i = 0xFFFF; 在机器字长对齐的情况下，任何时候，a要么是0，要么是0xFFFF，不会出现0xFF00。（如果是pack（1），上面就不成立了） 因此就有个很天然的想法，如果生产者和消费者各一个，分属不同线程，生产">
@@ -173,8 +173,7 @@
 <li><a href="https://github.com/noodle1983/framework-nd/blob/master/Utility/include/KfifoBuffer.h" target="_blank" rel="noopener">KfifoBuffer.h</a></li>
 <li><a href="https://github.com/noodle1983/framework-nd/blob/master/Utility/src/KfifoBuffer.cpp" target="_blank" rel="noopener">KfifoBuffer.cpp</a></li>
 </ul>
-<p>上面源代码有个问题，mutable应为volatile，别的地方改了，没提交到github</p>
-<h1 id="3-后记"><a href="#3-后记" class="headerlink" title="3. 后记"></a>3. 后记</h1><p>当时查过，size_t的赋值在机器字长对齐的情况下，部分平台是由多条指令实现的，这种平台(网上也没说是什么平台)不适用。根据笔者的测试，x86/x64是ok的，arm的默认thumb指令集也ok。请测试使用。</p>
+<h1 id="3-后记"><a href="#3-后记" class="headerlink" title="3. 后记"></a>3. 后记</h1><p>当时查过，size_t的赋值在机器字长对齐的情况下，部分平台可能会由多条指令实现的，这种平台(网上也没说是什么平台，估计比较小众)不适用。根据笔者的测试，x86/x64是ok的，arm的默认thumb指令集也ok。请测试使用。</p>
 
       
 
@@ -403,6 +402,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
               </li>
              
@@ -412,10 +415,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">server</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
