@@ -17,7 +17,7 @@
 <meta property="og:description" content="1. 背景框架背景见上篇。 网络框架的设计参考了python的异步框架twisted。 笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://github.com/noodle1983/private/raw/master/CommonBlog/framework-nd_net.png">
-<meta property="og:updated_time" content="2019-01-01T15:54:33.219Z">
+<meta property="og:updated_time" content="2019-01-11T02:59:01.829Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="framework-nd之网络模型">
 <meta name="twitter:description" content="1. 背景框架背景见上篇。 网络框架的设计参考了python的异步框架twisted。 笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就">
@@ -157,8 +157,8 @@
       
         <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h1><p>框架背景见<a href="https://noodle1983.github.io/2019/01/01/framework-nd_thread_model/" target="_blank" rel="noopener">上篇</a>。</p>
 <p>网络框架的设计参考了python的异步框架<a href="https://twistedmatrix.com/trac/" target="_blank" rel="noopener">twisted</a>。</p>
-<p>笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就看着内存一直在涨，5分钟已挂…您没听错，就是5分钟一挂，提单的严重级别是中级，要放国内早爆了…除了升级扩容别无他法。当时就感叹，异步没有压不爆的机器。</p>
-<p>鉴于此，笔者当时看了挺多异步的设计，twisted是印象最深的一个。接着用python写一个自己的python测试框架<a href="https://github.com/noodle1983/pythontest" target="_blank" rel="noopener">pythontest</a>, 但一直都没拍上用场。framework-nd的网络模型其实就是pythontest的c++版。但笔者的python仅限于东拼西凑，答不出所以然。</p>
+<p>笔者对同步和异步性能的认识源于还在爱立信的两个项目，第一个项目是同步的，2-3k的tps，性能压不上去，客户端您随便加压力，我服务端就不理你，就这种；第二个项目是异步的，1w的tps，实验室环境在瑞典，一直没机会玩玩。但笔者因为是研发中心支持，在一线人员配合下能直接登录上生成环境，最惨烈的一次是阿三的服务器，就看着内存一直在涨，5分钟一挂…您没听错，就是5分钟一挂，提单的严重级别是中级，要放国内早爆了…除了升级扩容别无他法。当时就感叹，异步没有压不爆的机器。</p>
+<p>鉴于此，笔者当时看了挺多异步的设计，twisted是印象最深的一个。接着用python写一个自己的python测试框架<a href="https://github.com/noodle1983/pythontest" target="_blank" rel="noopener">pythontest</a>, 但一直都没派上用场。framework-nd的网络模型其实就是pythontest的c++版。但笔者的python仅限于东拼西凑，答不出所以然。</p>
 <h1 id="2-设计"><a href="#2-设计" class="headerlink" title="2. 设计"></a>2. 设计</h1><p>写网络框架的人，应该都看过《unix网络编程》，也知道平台差异性。笔者选用libevent1（2的设计比较复杂，没用）去封装平台差异，socket的读写按边缘触发处理。</p>
 <p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/framework-nd_net.png" alt="class_model"></p>
 <ul>
