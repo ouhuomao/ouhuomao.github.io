@@ -238,7 +238,7 @@
         <h1 id="1-设计思路"><a href="#1-设计思路" class="headerlink" title="1. 设计思路"></a>1. 设计思路</h1><p>经历的项目里，见过有用autoconf的，但是私有的server，部署环境是确定的，大多都是直接用Makefile。</p>
 <p>为什么说是强迫症的呢？主要是最初有这么几个想法：</p>
 <ul>
-<li>见到的其他所有Makefile，.o文件和.c/.cpp文件是放在一起的，觉得不美观，想仿VS，放在另外一个文件夹里，如.lib。和VS不同的是，笔者还想在这个目录下建立和源代码一样的目录体系，.o文件放在各自的目录下。这样有什么好处呢，不同的目录相当于不同的命名空间，如果没有目录结构，这部分信息就丢了。如我们的miniserver在不同的目录下，有两个相同名字的misc.cpp，内容是不一样的（一个有用，一个是废的），其Editor的版本是用VS编译的，就造成了一个诡异的结果，有时是ok的，有时链接符号未定义…这个bug让人好找</li>
+<li>见到的其他所有Makefile，.o文件和.c/.cpp文件是放在一起的，觉得不美观，想仿VS，放在另外一个文件夹里，如.lib。和VS不同的是，笔者还想在这个目录下建立和源代码一样的目录体系，.o文件放在各自的目录下。这样有什么好处呢，不同的目录相当于不同的命名空间，如果没有目录结构，这部分信息就丢了。如我们的miniserver在不同的目录下，有两个相同名字的misc.cpp，内容是不一样的（一个有用，一个是废的），其Editor的版本是用VS编译的，因为VS是没有保留目录信息的，后编译的文件会覆盖前一个，就造成了一个诡异的结果，有时是ok的，有时链接符号未定义…这个bug让人好找</li>
 <li>Makefile支持include的语法，另一个想法是将它做成插件化，各层的Makefile只要include了之后，对几个变量进行赋值就ok了（Android的Makefile也是这么干的）。</li>
 <li>增量编译</li>
 </ul>
@@ -1213,15 +1213,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
               </li>
              
               <li class="article-tag-list-item">
