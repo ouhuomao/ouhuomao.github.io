@@ -457,7 +457,7 @@
 <p>如果将writeIndexM限制于[0, sizeM)，因为readIndexM只能由消费者改，那么下次写，这条公式就不对了。</p>
 <p>怎么处理呢？与其做复杂的判断，不如不限偏移量的范围，就让writeIndexM和readIndexM只增不减，即使是溢出，因为sizeM远小于量偏移量的取值范围，上面的公式还是成立的。</p>
 <p>这样子，带来另外一个问题，如何将writeIndexM映射回buffer的偏移量呢？很简单，对sizeM取余就好。这样对sizeM会有限制，比如32bit，因为有溢出的问题，推导要求 (0xFFFFFFFF + 1) % sizeM = 0 % sizeM = 0，即</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">n * sizeM = 2^&#123;32&#125;, n \in N</span><br></pre></td></tr></table></figure>
+<p><img src="https://github.com/noodle1983/private/raw/master/CommonBlog/fifo_fomula.png" alt="fomula"></p>
 <p>也就是说sizeM必须是2的倍数</p>
 <p>至此，这个循环的buffer就成型了，一个线程读一个线程写，不用加锁，互不干扰。如果多个生产者，需要在生产者侧加锁。消费者类似。</p>
 <h1 id="2-实现"><a href="#2-实现" class="headerlink" title="2. 实现"></a>2. 实现</h1><p>源代码，32位及以上适用：</p>
@@ -1215,14 +1215,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Unity iOS build</a>
               </li>
              
@@ -1231,7 +1223,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">server framework</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Android NDK gdb</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Unity Android APP il2cpp</a>
               </li>
              
               <li class="article-tag-list-item">
